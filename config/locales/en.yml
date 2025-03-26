@@ -946,6 +946,8 @@ en:
       attribute_help_text:
         attribute_name: "Attribute"
         help_text: "Help text"
+      auth_provider:
+        scim_clients: "SCIM Clients"
       capability:
         context: "Context"
       changeset:
@@ -1615,6 +1617,9 @@ en:
       role:
         one: "Role"
         other: "Roles"
+      scim_client:
+        one: "SCIM Client"
+        other: "SCIM Clients"
       status: "Work package status"
       token/api:
         one: Access token

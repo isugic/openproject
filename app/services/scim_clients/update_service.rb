@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #-- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
@@ -26,42 +28,19 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-class AuthProvider < ApplicationRecord
-  belongs_to :creator, class_name: "User"
+class ScimClients::UpdateService < BaseServices::Update
+  def after_perform(call)
+    return call if call.failure?
 
-  has_many :scim_clients, dependent: :restrict_with_error
+    client = call.result
+    # TODO: this makes update service spec fail, because it's unexpected that set attributes service does more than attribute setting...
+    client.service_account&.save! # TODO: return failure instead of raising
 
-  validates :display_name, presence: true
-  validates :display_name, uniqueness: true
-
-  after_destroy :unset_direct_provider
-
-  def self.slug_fragment
-    raise NotImplementedError
-  end
-
-  def user_count
-    @user_count ||= User.where("identity_url LIKE ?", "#{slug}%").count
-  end
-
-  def human_type
-    raise NotImplementedError
-  end
-
-  def auth_url
-    root_url = OpenProject::StaticRouting::StaticUrlHelpers.new.root_url
-    URI.join(root_url, "auth/#{slug}/").to_s
-  end
-
-  def callback_url
-    URI.join(auth_url, "callback").to_s
-  end
-
-  protected
-
-  def unset_direct_provider
-    if Setting.omniauth_direct_login_provider == slug
-      Setting.omniauth_direct_login_provider = ""
+    # FIXME: we have no params in after_perform, so we can't use the params[:authentication_method] to decide here
+    if client.service_account.identity_url.present?
+      client.oauth_application.destroy
     end
+
+    call
   end
 end

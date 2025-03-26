@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #-- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
@@ -26,42 +28,45 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-class AuthProvider < ApplicationRecord
-  belongs_to :creator, class_name: "User"
+module ScimClients
+  FormModel = Data.define(:name, :auth_provider_id, :authentication_method, :jwt_sub) do
+    extend ActiveModel::Naming
 
-  has_many :scim_clients, dependent: :restrict_with_error
+    class << self
+      def from_client(client)
+        identity_url = client&.service_account&.identity_url || ""
+        _, jwt_sub = identity_url.split(":", 2)
+        new(
+          name: client.name,
+          auth_provider_id: client.auth_provider_id,
+          authentication_method: authentication_method(client),
+          jwt_sub:
+        )
+      end
 
-  validates :display_name, presence: true
-  validates :display_name, uniqueness: true
+      def from_params(params)
+        new(
+          name: params[:name],
+          auth_provider_id: params[:auth_provider_id],
+          authentication_method: params[:authentication_method],
+          jwt_sub: params[:jwt_sub]
+        )
+      end
 
-  after_destroy :unset_direct_provider
+      private
 
-  def self.slug_fragment
-    raise NotImplementedError
-  end
+      def authentication_method(client)
+        return AUTHENTICATION_SSO if client&.service_account&.identity_url.present?
 
-  def user_count
-    @user_count ||= User.where("identity_url LIKE ?", "#{slug}%").count
-  end
-
-  def human_type
-    raise NotImplementedError
-  end
-
-  def auth_url
-    root_url = OpenProject::StaticRouting::StaticUrlHelpers.new.root_url
-    URI.join(root_url, "auth/#{slug}/").to_s
-  end
-
-  def callback_url
-    URI.join(auth_url, "callback").to_s
-  end
-
-  protected
-
-  def unset_direct_provider
-    if Setting.omniauth_direct_login_provider == slug
-      Setting.omniauth_direct_login_provider = ""
+        AUTHENTICATION_OAUTH_APPLICATION
+      end
     end
+  end
+
+  class FormModel
+    AUTHENTICATION_METHODS = [
+      AUTHENTICATION_SSO = "sso",
+      AUTHENTICATION_OAUTH_APPLICATION = "oauth2"
+    ].freeze
   end
 end

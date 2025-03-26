@@ -30,8 +30,8 @@
 
 FactoryBot.define do
   factory :oidc_provider, class: "OpenIDConnect::Provider" do
-    display_name { "Foobar" }
-    slug { "oidc-foobar" }
+    sequence(:display_name) { |n| "Foobar ##{n}" }
+    sequence(:slug) { |n| "oidc-foobar-#{n}" }
     limit_self_registration { true }
     creator factory: :user
 
