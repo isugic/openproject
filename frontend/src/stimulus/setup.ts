@@ -22,6 +22,8 @@ import ScrollIntoViewController from './controllers/scroll-into-view.controller'
 import CkeditorFocusController from './controllers/ckeditor-focus.controller';
 import AddMeetingParamsController from './controllers/add-meeting-params.controller';
 
+import AutoSubmit from '@stimulus-components/auto-submit';
+
 declare global {
   interface Window {
     Stimulus:Application;
@@ -57,3 +59,5 @@ instance.register('pattern-input', PatternInputController);
 instance.register('scroll-into-view', ScrollIntoViewController);
 instance.register('ckeditor-focus', CkeditorFocusController);
 instance.register('add-meeting-params', AddMeetingParamsController);
+
+instance.register('auto-submit', AutoSubmit);
