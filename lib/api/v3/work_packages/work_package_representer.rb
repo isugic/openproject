@@ -523,6 +523,10 @@ module API
                                                                .to_s
                  end
 
+        associated_resource :project_phase_definition,
+                            v3_path: :project_phase_definition,
+                            representer: ::API::V3::ProjectPhaseDefinitions::ProjectPhaseDefinitionRepresenter
+
         associated_resource :status
 
         associated_resource :author,
@@ -685,6 +689,10 @@ module API
           @project_phase ||= represented.project&.phases&.detect do
             it.definition_id == represented.project_phase_definition_id
           end
+        end
+
+        def project_phase_definition
+          @project_phase_definition ||= represented.project_phase_definition
         end
 
         def phase_set_and_active?

@@ -52,13 +52,15 @@ export class ProjectPhaseDisplayField extends DisplayField {
    * the icon in the color defined for the definition.
    *
    * @return {HTMLElement} The HTML span element containing the project phase icon.
+   * @see phaseIcon
    */
-  protected phaseIcon():HTMLElement {
-    const projectPhase = this.attribute as ProjectPhaseResource;
+  public static phaseIconByName(phaseName?:string, addPadding = true) {
     const icon = document.createElement('span');
 
-    if (projectPhase) {
-      icon.classList.add('mr-1');
+    if (phaseName) {
+      if (addPadding) {
+        icon.classList.add('mr-1');
+      }
 
       icon.innerHTML = toDOMString(
         opPhaseIconData,
@@ -71,9 +73,18 @@ export class ProjectPhaseDisplayField extends DisplayField {
       // The name is guaranteed to be unique.
       // The = signs at the end of the base64 string are replaced with _ to make it a valid class name.
       // This needs to be kept in sync with the ColorsHelper#project_phase_color_css method in the backend.
-      icon.classList.add(`__hl_inline_project_phase_definition_${btoa(projectPhase.name).replace(/=/g, '_')}`);
+      icon.classList.add(`__hl_inline_project_phase_definition_${btoa(phaseName).replace(/=/g, '_')}`);
     }
 
     return icon;
+  }
+
+  /**
+   * @see phaseIconByName
+   */
+  protected phaseIcon():HTMLElement {
+    const projectPhase = this.attribute as ProjectPhaseResource;
+
+    return ProjectPhaseDisplayField.phaseIconByName(projectPhase?.name);
   }
 }

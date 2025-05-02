@@ -48,6 +48,11 @@ module API
         link :groupBy do
           converted_name = convert_attribute(query.group_by_column.name)
 
+          # FIXME: there must be a better place to define this conversion
+          if converted_name == "projectPhase"
+            converted_name = "projectPhaseDefinition"
+          end
+
           {
             href: api_v3_paths.query_group_by(converted_name),
             title: query.group_by_column.caption

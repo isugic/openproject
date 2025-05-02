@@ -48,4 +48,6 @@ class Project::PhaseDefinition < ApplicationRecord
   default_scope { order(:position) }
 
   scopes :with_project_count
+
+  def to_s; name end
 end

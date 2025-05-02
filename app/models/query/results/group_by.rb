@@ -158,7 +158,14 @@ module ::Query::Results::GroupBy
   end
 
   def transform_property_keys(groups)
-    association = WorkPackage.reflect_on_all_associations.detect { |a| a.name == query.group_by_column.name.to_sym }
+    association = WorkPackage.reflect_on_all_associations.detect do |a|
+      # FIXME: refactor this hack
+      if a.name == :project_phase_definition
+        query.group_by_column.name.to_sym == :project_phase
+      else
+        a.name == query.group_by_column.name.to_sym
+      end
+    end
 
     if association
       transform_association_property_keys(association, groups)

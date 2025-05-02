@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #-- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
@@ -65,6 +67,11 @@ module API
                getter: ->(*) { count },
                render_nil: true
 
+      property :leading_icon,
+               exec_context: :decorator,
+               getter: ->(*) { leading_icon },
+               render_nil: false
+
       def model_required?
         false
       end
@@ -80,6 +87,12 @@ module API
           represented.empty? ? nil : represented.map(&:to_s).sort.join(", ")
         else
           represented&.to_s
+        end
+      end
+
+      def leading_icon
+        if represented.is_a?(Project::PhaseDefinition)
+          "projectPhaseDefinition"
         end
       end
 

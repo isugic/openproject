@@ -51,6 +51,11 @@ class Queries::WorkPackages::Selects::PropertySelect < Queries::WorkPackages::Se
       sortable: "position",
       groupable: "#{WorkPackage.table_name}.type_id"
     },
+    project_phase: {
+      association: "project_phase_definition",
+      sortable: "#{Project::PhaseDefinition.table_name}.position",
+      groupable: "#{Project::PhaseDefinition.table_name}.id"
+    },
     parent: {
       association: "ancestors_relations",
       sortable: false

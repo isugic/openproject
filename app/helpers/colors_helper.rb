@@ -81,10 +81,16 @@ module ColorsHelper
       resource_color_css("project_phase_definition", definition, inline_foreground: true)
 
       set_foreground_colors_for(
-        class_name: ".#{hl_inline_class('project_phase_definition', Base64.strict_encode64(definition.name).tr('=', '_'))}",
+        class_name: ".#{project_phase_color_css_class_name(definition)}",
         color: definition.color
       )
     end
+  end
+
+  # @see #project_phase_color_css
+  def project_phase_color_css_class_name(project_phase_definition)
+    hl_inline_class("project_phase_definition",
+                    Base64.strict_encode64(project_phase_definition.name).tr("=", "_"))
   end
 
   def resource_color_css(name, entry, inline_foreground: false)

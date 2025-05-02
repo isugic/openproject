@@ -30,7 +30,7 @@
 
 import { HalResource } from 'core-app/features/hal/resources/hal-resource';
 
-/* This resource is currently a stub. It is only defined to the extend necessary for the implementation */
+/* This resource is currently a stub. It is only defined to the extent necessary for the implementation */
 export class ProjectPhaseResource extends HalResource {
   definition:HalResource;
 }
