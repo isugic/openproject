@@ -53,6 +53,7 @@ class Queries::WorkPackages::Selects::PropertySelect < Queries::WorkPackages::Se
     },
     project_phase: {
       association: "project_phase_definition",
+      group_by_column_name: "project_phase_definition",
       sortable: "#{Project::PhaseDefinition.table_name}.position",
       groupable: "#{Project::PhaseDefinition.table_name}.id"
     },

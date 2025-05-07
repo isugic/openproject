@@ -32,6 +32,7 @@ class Queries::WorkPackages::Selects::WorkPackageSelect
               :sortable_join,
               :groupable_join,
               :groupable_select,
+              :group_by_column_name,
               :summable,
               :default_order,
               :association,
@@ -129,6 +130,7 @@ class Queries::WorkPackages::Selects::WorkPackageSelect
       summable_select
       summable_work_packages_select
       association
+      group_by_column_name
       null_handling
       default_order
     ].each do |attribute|
