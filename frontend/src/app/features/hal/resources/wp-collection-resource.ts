@@ -60,7 +60,7 @@ export interface WorkPackageCollectionResource extends WorkPackageCollectionReso
  */
 export interface GroupObject {
   value:any;
-  leadingIcon?:any;
+  leadingIcon?:string;
   count:number;
   collapsed?:boolean;
   index:number;
