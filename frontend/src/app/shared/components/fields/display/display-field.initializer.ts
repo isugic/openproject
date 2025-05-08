@@ -110,7 +110,6 @@ export function initializeCoreDisplayFields(displayFieldService:DisplayFieldServ
         'CustomField::Hierarchy::Item',
         'CustomOption'])
       .addFieldType(ProjectPhaseDisplayField, 'projectPhase', ['ProjectPhase'])
-      .addFieldType(ProjectPhaseDisplayField, 'projectPhaseDefinition', ['ProjectPhaseDefinition'])
       .addFieldType(ResourcesDisplayField, 'resources', ['[]CustomOption', '[]CustomField::Hierarchy::Item'])
       .addFieldType(ResourcesDisplayField, 'resources', ['[]Version'])
       .addFieldType(MultipleUserFieldModule, 'users', ['[]User'])
