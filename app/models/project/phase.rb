@@ -51,7 +51,8 @@ class Project::Phase < ApplicationRecord
   attr_readonly :definition_id
 
   scope :active, -> { where(active: true) }
-  scopes :order_by_position
+  scopes :order_by_position,
+         :covering_dates_and_days_of_week
 
   class << self
     def visible(user = User.current)
