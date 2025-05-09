@@ -89,6 +89,16 @@ module Pages
       end
     end
 
+    # Expects a collection of groups and the count of their grouped items in the table.
+    # @param group_hash [Hash] Group names mapped to the count of their items, e.g. "first group" => 3
+    def expect_groups(group_hash)
+      within(table_container) do
+        group_hash.each do |group_name, count|
+          expect(page).to have_test_selector("op-group--value", text: "#{group_name} (#{count})")
+        end
+      end
+    end
+
     # Expects the sums row in the table to have the specified attributes.
     #
     # @param attr_value_hash [Hash] The attribute-value hash.

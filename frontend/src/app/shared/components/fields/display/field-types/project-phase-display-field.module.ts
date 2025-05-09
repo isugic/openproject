@@ -62,6 +62,8 @@ export class ProjectPhaseDisplayField extends DisplayField {
         icon.classList.add('mr-1');
       }
 
+      icon.setAttribute('data-test-selector', `project-phase-icon ${phaseName}`);
+
       icon.innerHTML = toDOMString(
         opPhaseIconData,
         'small',
