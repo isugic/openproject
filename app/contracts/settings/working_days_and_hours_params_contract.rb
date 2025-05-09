@@ -66,8 +66,15 @@ module Settings
     end
 
     def unique_job
-      WorkPackages::ApplyWorkingDaysChangeJob.new.check_concurrency do
-        errors.add :base, :previous_working_day_changes_unprocessed
+      [
+        Projects::Phases::ApplyWorkingDaysChangeJob,
+        WorkPackages::ApplyWorkingDaysChangeJob
+      ].each do |job_class|
+        job_class.new.check_concurrency do
+          errors.add :base, :previous_working_day_changes_unprocessed
+        end
+
+        break if errors.added? :base, :previous_working_day_changes_unprocessed
       end
     end
 
