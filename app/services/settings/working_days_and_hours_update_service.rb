@@ -58,11 +58,16 @@ class Settings::WorkingDaysAndHoursUpdateService < Settings::UpdateService
 
   def after_perform(call)
     super.tap do
-      WorkPackages::ApplyWorkingDaysChangeJob.perform_later(
-        user_id: User.current.id,
-        previous_working_days:,
-        previous_non_working_days:
-      )
+      [
+        Projects::Phases::ApplyWorkingDaysChangeJob,
+        WorkPackages::ApplyWorkingDaysChangeJob
+      ].each do |job_class|
+        job_class.perform_later(
+          user_id: User.current.id,
+          previous_working_days:,
+          previous_non_working_days:
+        )
+      end
     end
   end
 
