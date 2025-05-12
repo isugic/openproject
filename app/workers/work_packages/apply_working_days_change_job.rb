@@ -89,12 +89,12 @@ class WorkPackages::ApplyWorkingDaysChangeJob < ApplicationJob
 
   def changed_days
     # reverse order, so new working days map to true
-    change_between(previous_working_days, Setting.working_days)
+    @changed_days ||= change_between(previous_working_days, Setting.working_days)
   end
 
   def changed_non_working_dates
     # reverse order, as new non working dates map to false
-    change_between(NonWorkingDay.pluck(:date), previous_non_working_days)
+    @changed_non_working_dates ||= change_between(NonWorkingDay.pluck(:date), previous_non_working_days)
   end
 
   def change_between(list_a, list_b)
