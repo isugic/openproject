@@ -34,11 +34,11 @@ class Projects::Phases::ApplyWorkingDaysChangeJob < ApplyWorkingDaysChangeJobBas
   def apply_working_days_change
     user = User.current
 
-    applicable_phases.group(:project_id).pluck(:project_id, "ARRAY_AGG(id)").each do |project_id, phase_ids|
+    applicable_phases.distinct.pluck(:project_id).each do |project_id|
       project = Project.find_by(id: project_id)
       next unless project
 
-      phases = project.available_phases.drop_while { !it.id.in?(phase_ids) }
+      phases = project.available_phases
       next if phases.empty?
 
       from = phases.first.start_date
