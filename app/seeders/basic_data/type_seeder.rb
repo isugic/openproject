@@ -33,6 +33,7 @@ module BasicData
       BasicData::ColorSeeder,
       BasicData::ColorSchemeSeeder
     ]
+    self.attribute_names_for_lookups = %i[name]
 
     def model_attributes(type_data)
       {

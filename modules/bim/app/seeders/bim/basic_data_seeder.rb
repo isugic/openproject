@@ -39,6 +39,8 @@ module Bim
         ::BasicData::ColorSchemeSeeder,
         ::BasicData::ProjectPhaseColorSeeder,
         ::BasicData::ProjectPhaseDefinitionSeeder,
+        ::BasicData::StatusSeeder,
+        ::BasicData::TypeSeeder,
         ::BasicData::WorkflowSeeder,
         ::BasicData::PrioritySeeder,
         ::Bim::BasicData::SettingSeeder,

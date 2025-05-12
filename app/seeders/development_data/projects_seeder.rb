@@ -47,7 +47,9 @@ module DevelopmentData
     end
 
     def applicable?
-      recent_installation? && Project.where(identifier: project_identifiers).count == 0
+      recent_installation? &&
+        Project.where(identifier: project_identifiers).count == 0 &&
+        seed_data.reference_exists?(:default_role_project_admin)
     end
 
     # returns true if no projects have been created more than 1 hour ago,

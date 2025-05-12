@@ -34,8 +34,8 @@ module DemoData
       print_status " ↳ Updating settings"
       seed_settings
 
-      seed_data.each_data("projects") do |project_data|
-        seed_project(project_data)
+      project_seeders.each do |project_seeder|
+        project_seeder.seed!
         Setting.demo_projects_available = true
       end
 
@@ -44,7 +44,7 @@ module DemoData
     end
 
     def applicable?
-      Project.count.zero?
+      Project.count.zero? && project_seeders.all?(&:applicable?)
     end
 
     def seed_settings
@@ -53,11 +53,6 @@ module DemoData
         .each do |k, v|
         Setting[k] = v
       end
-    end
-
-    def seed_project(project_data)
-      project_seeder = ProjectSeeder.new(project_data)
-      project_seeder.seed!
     end
 
     def seed_form_configuration
@@ -73,6 +68,12 @@ module DemoData
         welcome_text: welcome.lookup("text"),
         welcome_on_homescreen: 1
       }
+    end
+
+    private
+
+    def project_seeders
+      @project_seeders ||= seed_data.each_data("projects").map { |project_data| ProjectSeeder.new(project_data) }
     end
   end
 end

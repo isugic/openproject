@@ -60,6 +60,13 @@ module DemoData
       ]
     end
 
+    def applicable?
+      types = seed_data.lookup("types")
+
+      seed_data.reference_exists?(:default_role_project_admin) &&
+        (types.nil? || types.all? { |type_reference| seed_data.reference_exists?(type_reference) })
+    end
+
     private
 
     attr_writer :project

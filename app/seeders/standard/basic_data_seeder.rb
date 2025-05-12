@@ -39,6 +39,8 @@ module Standard
         ::BasicData::ColorSchemeSeeder,
         ::BasicData::ProjectPhaseColorSeeder,
         ::BasicData::ProjectPhaseDefinitionSeeder,
+        ::BasicData::StatusSeeder,
+        ::BasicData::TypeSeeder,
         ::BasicData::WorkflowSeeder,
         ::BasicData::PrioritySeeder,
         ::BasicData::SettingSeeder,
