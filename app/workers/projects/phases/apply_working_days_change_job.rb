@@ -28,26 +28,12 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-class Projects::Phases::ApplyWorkingDaysChangeJob < ApplicationJob
-  include JobConcurrency
-  queue_with_priority :above_normal
+class Projects::Phases::ApplyWorkingDaysChangeJob < ApplyWorkingDaysChangeJobBase
+  private
 
-  good_job_control_concurrency_with(
-    total_limit: 1
-  )
-
-  attr_reader :previous_working_days, :previous_non_working_days
-
-  def perform(user_id:, previous_working_days:, previous_non_working_days:)
-    @previous_working_days = previous_working_days
-    @previous_non_working_days = previous_non_working_days
-
-    user = User.find(user_id)
-
-    User.execute_as user do
-      # TODO: find all active phases with date range affected by changes
-      # TODO: group by project
-      # TODO: call RescheduleService on phases of that project starting with the one with smallest definition position
-    end
+  def apply_working_days_change
+    # TODO: find all active phases with date range affected by changes
+    # TODO: group by project
+    # TODO: call RescheduleService on phases of that project starting with the one with smallest definition position
   end
 end

@@ -26,40 +26,17 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-class WorkPackages::ApplyWorkingDaysChangeJob < ApplicationJob
-  include JobConcurrency
-  queue_with_priority :above_normal
-
-  good_job_control_concurrency_with(
-    total_limit: 1
-  )
-
-  attr_reader :previous_working_days, :previous_non_working_days
-
-  def perform(user_id:, previous_working_days:, previous_non_working_days:)
-    @previous_working_days = previous_working_days
-    @previous_non_working_days = previous_non_working_days
-
-    user = User.find(user_id)
-
-    User.execute_as user do
-      for_each_work_package(applicable_work_packages) do |work_package|
-        apply_change_to_work_package(work_package)
-      end
-
-      applicable_predecessors.find_each do |predecessor|
-        apply_change_to_predecessor(predecessor)
-      end
-    end
-  end
-
+class WorkPackages::ApplyWorkingDaysChangeJob < ApplyWorkingDaysChangeJobBase
   private
 
-  def journal_cause
-    @journal_cause ||= Journal::CausedByWorkingDayChanges.new(
-      working_days: changed_days,
-      non_working_days: changed_non_working_dates
-    )
+  def apply_working_days_change
+    for_each_work_package(applicable_work_packages) do |work_package|
+      apply_change_to_work_package(work_package)
+    end
+
+    applicable_predecessors.find_each do |predecessor|
+      apply_change_to_predecessor(predecessor)
+    end
   end
 
   def apply_change_to_work_package(work_package)
@@ -85,23 +62,6 @@ class WorkPackages::ApplyWorkingDaysChangeJob < ApplicationJob
       .covering_dates_and_days_of_week(days_of_week:, dates:)
       .order(WorkPackage.arel_table[:start_date].asc.nulls_first,
              WorkPackage.arel_table[:due_date].asc)
-  end
-
-  def changed_days
-    # reverse order, so new working days map to true
-    @changed_days ||= change_between(previous_working_days, Setting.working_days)
-  end
-
-  def changed_non_working_dates
-    # reverse order, as new non working dates map to false
-    @changed_non_working_dates ||= change_between(NonWorkingDay.pluck(:date), previous_non_working_days)
-  end
-
-  def change_between(list_a, list_b)
-    deleted = (list_a - list_b).index_with(false)
-    added = (list_b - list_a).index_with(true)
-
-    deleted.merge(added)
   end
 
   def applicable_predecessors
