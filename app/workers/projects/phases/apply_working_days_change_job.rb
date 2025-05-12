@@ -32,8 +32,27 @@ class Projects::Phases::ApplyWorkingDaysChangeJob < ApplyWorkingDaysChangeJobBas
   private
 
   def apply_working_days_change
-    # TODO: find all active phases with date range affected by changes
-    # TODO: group by project
-    # TODO: call RescheduleService on phases of that project starting with the one with smallest definition position
+    user = User.current
+
+    applicable_phases.group(:project_id).pluck(:project_id, "ARRAY_AGG(id)").each do |project_id, phase_ids|
+      project = Project.find_by(id: project_id)
+      next unless project
+
+      phases = project.available_phases.drop_while { !it.id.in?(phase_ids) }
+      next if phases.empty?
+
+      from = phases.first.start_date
+
+      ProjectLifeCycleSteps::RescheduleService.new(user:, project:).call(phases:, from:)
+    end
+  end
+
+  def applicable_phases
+    days_of_week = changed_days.keys
+    dates = changed_non_working_dates.keys
+
+    Project::Phase
+      .active # TODO: should visible be used?
+      .covering_dates_and_days_of_week(days_of_week:, dates:)
   end
 end
