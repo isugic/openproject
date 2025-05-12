@@ -44,6 +44,10 @@ class Projects::Phases::ApplyWorkingDaysChangeJob < ApplyWorkingDaysChangeJobBas
       from = phases.first.start_date
 
       ProjectLifeCycleSteps::RescheduleService.new(user:, project:).call(phases:, from:)
+
+      project.journal_cause = journal_cause
+
+      project.touch_and_save_journals
     end
   end
 
