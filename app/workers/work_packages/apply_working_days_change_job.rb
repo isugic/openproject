@@ -88,21 +88,20 @@ class WorkPackages::ApplyWorkingDaysChangeJob < ApplicationJob
   end
 
   def changed_days
-    previous = Set.new(previous_working_days)
-    current = Set.new(Setting.working_days)
-
-    # `^` is a Set method returning a new set containing elements exclusive to
-    # each other
-    (previous ^ current).index_with { |day| current.include?(day) }
+    # reverse order, so new working days map to true
+    change_between(previous_working_days, Setting.working_days)
   end
 
   def changed_non_working_dates
-    previous = Set.new(previous_non_working_days)
-    current = Set.new(NonWorkingDay.pluck(:date))
+    # reverse order, as new non working dates map to false
+    change_between(NonWorkingDay.pluck(:date), previous_non_working_days)
+  end
 
-    # `^` is a Set method returning a new set containing elements exclusive to
-    # each other
-    (previous ^ current).index_with { |day| current.exclude?(day) }
+  def change_between(list_a, list_b)
+    set_a = Set.new(list_a)
+    set_b = Set.new(list_b)
+
+    (set_a ^ set_b).index_with { set_b.include?(it) }
   end
 
   def applicable_predecessors
