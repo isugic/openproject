@@ -98,10 +98,10 @@ class WorkPackages::ApplyWorkingDaysChangeJob < ApplicationJob
   end
 
   def change_between(list_a, list_b)
-    set_a = Set.new(list_a)
-    set_b = Set.new(list_b)
+    deleted = (list_a - list_b).index_with(false)
+    added = (list_b - list_a).index_with(true)
 
-    (set_a ^ set_b).index_with { set_b.include?(it) }
+    deleted.merge(added)
   end
 
   def applicable_predecessors
