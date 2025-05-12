@@ -3,13 +3,30 @@
 require "spec_helper"
 
 RSpec.describe "Project phase field in the work package table", :js do
-  let(:user) { create(:admin) }
-
   let(:project_phase_definition) { create(:project_phase_definition, position: 99) }
   let(:project_phase) { create(:project_phase, definition: project_phase_definition) }
   let(:other_project_phase) { create(:project_phase) }
   let(:project_phases) { [project_phase, other_project_phase].compact }
   let(:project) { create(:project_with_types, phases: project_phases) }
+  let(:another_project) { create(:project_with_types) }
+  let(:all_permissions) do
+    %i[
+      view_work_packages
+      view_work_package_watchers
+      edit_work_packages
+      add_work_package_watchers
+      delete_work_package_watchers
+      manage_work_package_relations
+      add_work_package_comments
+      add_work_packages
+      view_time_entries
+      view_changesets
+      view_file_links
+      manage_file_links
+      delete_work_packages
+      view_project_phases
+    ]
+  end
   let(:work_package) do
     create(:work_package,
            project:,
@@ -30,24 +47,37 @@ RSpec.describe "Project phase field in the work package table", :js do
            subject: "wp without phase",
            author: current_user)
   end
+  let!(:wp_from_another_project) do
+    create(:work_package,
+           project: another_project,
+           subject: "wp from another project",
+           author: current_user)
+  end
   let!(:wp_table) { Pages::WorkPackagesTable.new(work_package.project) }
   let(:sort_criteria) { nil }
   let(:group_by) { nil }
-  let!(:query) do
-    query               = build(:query, user: current_user, project: work_package.project)
-    query.column_names  = %w(subject project_phase)
-    query.sort_criteria = sort_criteria if sort_criteria
-    query.group_by      = group_by if group_by
-    query.filters.clear
-    query.show_hierarchies = false
-
-    query.save!
-    query
+  let(:user) do
+    create(:user,
+           member_with_permissions: {
+             project => all_permissions,
+             another_project => all_permissions - [:view_project_phases]
+           })
   end
+  let!(:query) do
+    build(:public_query, user: current_user, project: work_package.project)
+  end
+  let(:query_columns) { %w(subject project_phase) }
 
   current_user { user }
 
   before do
+    query.column_names  = query_columns
+    query.sort_criteria = sort_criteria if sort_criteria
+    query.group_by      = group_by if group_by
+    query.filters.clear
+    query.show_hierarchies = false
+    query.save!
+
     wp_table.visit_query query
     wp_table.expect_work_package_listed work_package
 
@@ -117,11 +147,23 @@ RSpec.describe "Project phase field in the work package table", :js do
         wp_table.expect_work_package_with_attributes(wp_without_phase, { projectPhase: "-" })
       end
     end
-  end
 
-  context "with the feature flag being inactive", with_flag: { stages_and_gates: false } do
-    it "does not show project phases" do
-      wp_table.expect_work_package_with_attributes(work_package, { projectPhase: "" })
+    context "without the necessary permissions" do
+      let!(:query) { build(:global_query, user: current_user) }
+
+      it "does not render project phases you don't have permission for" do
+        # permission given, phase visible:
+        wp_table.expect_work_package_with_attributes(work_package, { projectPhase: project_phase_definition.name })
+
+        # permission missing, phase invisible:
+        wp_table.expect_work_package_with_attributes(wp_from_another_project, { projectPhase: "" })
+      end
     end
   end
+
+  # TODO
+  # context "with the feature flag being inactive", with_flag: { stages_and_gates: false } do
+  #   it "does not allow to add the column to a query" do
+  #   end
+  # end
 end
