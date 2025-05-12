@@ -37,7 +37,7 @@ RSpec.describe "Work Package table configuration modal columns spec", :js do
       columns.remove "Subject", save_changes: false
       columns.add "Project", save_changes: true
       columns.expect_column_available "Subject"
-      columns.expect_column_not_available "Project"
+      columns.expect_column_not_available /Project\z/
 
       expect(page).to have_css(".wp-table--table-header", text: "ID")
       expect(page).to have_css(".wp-table--table-header", text: "PROJECT")
