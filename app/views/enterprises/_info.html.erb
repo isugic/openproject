@@ -33,11 +33,8 @@ See COPYRIGHT and LICENSE files for more details.
 
 <div class="upsell--information-container">
   <div class='upsell-information'>
-    <%= angular_component_tag(
-          "opce-enterprise-base",
-          inputs: enterprise_angular_trial_inputs
-        )
-    %>
+    <%# Outer page to be primerized %>
+    <%= render EnterpriseTrials::StatusComponent.new %>
   </div>
 
   <div class='upsell-actions'>

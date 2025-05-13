@@ -65,13 +65,7 @@ module EnterpriseEdition
     end
 
     def free_trial_button
-      return if EnterpriseToken.active?
-      return unless User.current.admin?
-
-      helpers.angular_component_tag(
-        "opce-free-trial-button",
-        inputs: helpers.enterprise_angular_trial_inputs
-      )
+      render ::EnterpriseTrials::TrialButtonComponent.new
     end
 
     # Allow providing a custom upgrade now button

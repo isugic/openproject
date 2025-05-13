@@ -99,6 +99,7 @@ en:
       required_for_feature: "This add-on is only available with an active Enterprise edition support token."
       enterprise_link: "For more information, click here."
       start_trial: "Start free trial"
+      check_trial_status: "Check trial status"
       book_now: "Book now"
       get_quote: "Get a quote"
       buttons:
@@ -981,11 +982,12 @@ en:
       emoji_reaction:
         reactable: "Reacted on"
       enterprise_token:
-        domain: "Domain"
         starts_at: "Valid since"
         subscriber: "Subscriber"
         encoded_token: "Enterprise support token"
         active_user_count_restriction: "Maximum active users"
+      enterprise_trial:
+        company: "Company"
       grids/grid:
         page: "Page"
         row_count: "Number of rows"
@@ -1314,6 +1316,10 @@ en:
               forbidden_uri: "is forbidden by the server."
             scopes:
               not_match_configured: "doesn't match available scopes."
+        enterprise_trial:
+          already_used: "was already used to create a trial."
+          failed_to_create: "Trial could not be created (HTTP %{status})"
+          general_consent: "Please accept the terms and conditions."
         enterprise_token:
           unreadable: "can't be read. Are you sure it is a support token?"
         grids/grid:
@@ -1718,6 +1724,7 @@ en:
     derived_start_date: "Derived start date"
     direction: "Direction"
     display_sums: "Display Sums"
+    domain: "Domain"
     due_date: "Finish date"
     estimated_hours: "Work"
     estimated_time: "Work"
@@ -2162,6 +2169,15 @@ en:
       internal_comments_inline:
         title: "Write internal comments only a small group can see"
         description: " "
+    trial:
+      not_found: "The trial object could not be found."
+      domain_caption:
+        The token will be valid for your currently configured host name.
+      receive_newsletter_html: >
+        I want to receive the OpenProject <a target="_blank" href="https://www.openproject.org/newsletter/">newsletter</a>.
+      consent_html: >
+        I agree with the <a target="_blank" href="https://www.openproject.org/terms-of-service/">terms of service</a>
+        and the <a target="_blank" href="https://www.openproject.org/data-privacy-and-security/">privacy policy</a>.
   enumeration_activities: "Time tracking activities"
   enumeration_work_package_priorities: "Work package priorities"
   enumeration_reported_project_statuses: "Reported project status"

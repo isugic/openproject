@@ -82,6 +82,14 @@ module OpenProject
         end
       end
 
+      def enterprise_chargebee_site
+        if Rails.env.production?
+          self["enterprise_chargebee_site"]
+        else
+          "openproject-enterprise-test"
+        end
+      end
+
       def file_storage?
         attachments_storage == :file
       end
