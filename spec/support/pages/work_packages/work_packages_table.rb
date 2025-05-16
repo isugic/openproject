@@ -34,6 +34,7 @@ require_relative "concerns/work_package_by_button_creator"
 module Pages
   class WorkPackagesTable < Page
     include ::Pages::WorkPackages::Concerns::WorkPackageByButtonCreator
+    include ::Components::Autocompleter::NgSelectAutocompleteHelpers
 
     attr_reader :project
 
@@ -369,6 +370,11 @@ module Pages
 
     def progress_popover(work_package)
       Components::WorkPackages::ProgressPopover.new(container: work_package_container(work_package))
+    end
+
+    def expect_no_column_add_option(column_name)
+      completer = find(".wp-table--configuration-modal .op-draggable-autocomplete--input")
+      expect_no_ng_option(completer, column_name, results_selector: "body")
     end
 
     protected

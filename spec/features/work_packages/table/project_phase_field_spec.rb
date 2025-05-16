@@ -161,9 +161,12 @@ RSpec.describe "Project phase field in the work package table", :js do
     end
   end
 
-  # TODO
-  # context "with the feature flag being inactive", with_flag: { stages_and_gates: false } do
-  #   it "does not allow to add the column to a query" do
-  #   end
-  # end
+  context "with the feature flag being inactive", with_flag: { stages_and_gates: false } do
+    let(:query_columns) { %w(subject) }
+
+    it "does not offer to add the column to a query" do
+      wp_table.click_setting_item("Insert column")
+      wp_table.expect_no_column_add_option("Project phase")
+    end
+  end
 end
