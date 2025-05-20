@@ -6,15 +6,15 @@ module Primer
       module Dsl
         module InputMethods
           def autocompleter(**, &)
-            add_input AutocompleterInput.new(builder:, form:, **, &)
+            add_input AutocompleterInput.new(builder:, form:, **decorate_options(**), &)
           end
 
           def pattern_input(**, &)
-            add_input PatternInput.new(builder:, form:, **, &)
+            add_input PatternInput.new(builder:, form:, **decorate_options(**), &)
           end
 
           def color_select_list(**, &)
-            add_input ColorSelectInput.new(builder:, form:, **, &)
+            add_input ColorSelectInput.new(builder:, form:, **decorate_options(**), &)
           end
 
           def html_content(**, &)
@@ -22,27 +22,27 @@ module Primer
           end
 
           def project_autocompleter(**, &)
-            add_input ProjectAutocompleterInput.new(builder:, form:, **, &)
+            add_input ProjectAutocompleterInput.new(builder:, form:, **decorate_options(**), &)
           end
 
           def range_date_picker(**)
-            add_input RangeDatePickerInput.new(builder:, form:, **)
+            add_input RangeDatePickerInput.new(builder:, form:, **decorate_options(**))
           end
 
           def rich_text_area(**)
-            add_input RichTextAreaInput.new(builder:, form:, **)
+            add_input RichTextAreaInput.new(builder:, form:, **decorate_options(**))
           end
 
           def single_date_picker(**)
-            add_input SingleDatePickerInput.new(builder:, form:, **)
+            add_input SingleDatePickerInput.new(builder:, form:, **decorate_options(**))
           end
 
           def storage_manual_project_folder_selection(**)
-            add_input StorageManualProjectFolderSelectionInput.new(builder:, form:, **)
+            add_input StorageManualProjectFolderSelectionInput.new(builder:, form:, **decorate_options(**))
           end
 
           def work_package_autocompleter(**, &)
-            add_input WorkPackageAutocompleterInput.new(builder:, form:, **, &)
+            add_input WorkPackageAutocompleterInput.new(builder:, form:, **decorate_options(**), &)
           end
 
           def decorate_options(include_help_text: true, **options)
