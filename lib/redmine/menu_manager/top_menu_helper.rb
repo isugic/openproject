@@ -39,7 +39,6 @@ module Redmine::MenuManager::TopMenuHelper
 
   def top_menu_left_menu_items
     [render_main_top_menu_nodes,
-     render_projects_top_menu_node,
      render_quick_add_menu]
   end
 
