@@ -103,6 +103,7 @@ See COPYRIGHT and LICENSE files for more details.
         <h1 class="hidden-for-sighted"><%= t(:label_main_menu) %></h1>
         <opce-main-menu-resizer></opce-main-menu-resizer>
         <div id="menu-sidebar">
+          <%= render_projects_top_menu_node %>
           <%= main_menu %>
           <%= content_for :main_menu %>
           <%= call_hook :view_layouts_base_main_menu %>

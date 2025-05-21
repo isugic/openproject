@@ -37,7 +37,7 @@ module Redmine::MenuManager::TopMenu::ProjectsMenu
   private
 
   def render_projects_dropdown
-    content_tag(:li, class: "op-app-menu--item") do
+    content_tag(:div) do
       angular_component_tag("opce-header-project-select")
     end
   end
