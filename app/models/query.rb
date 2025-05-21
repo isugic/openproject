@@ -289,11 +289,6 @@ class Query < ApplicationRecord
                 .compact_blank
                 .map(&:to_sym)
 
-    # Set column_names to blank/nil if it is equal to the default columns
-    if col_names.map(&:to_s) == Setting.work_package_list_default_columns
-      col_names.clear
-    end
-
     write_attribute(:column_names, col_names)
   end
 
