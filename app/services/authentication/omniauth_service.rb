@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #-- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
@@ -53,6 +55,11 @@ module Authentication
       unless contract.validate
         result = ServiceResult.failure(errors: contract.errors)
         Rails.logger.error do
+          # Try to provide some context of the auth_hash in case of errors
+          auth_uid = begin
+            hash = auth_hash || {}
+            hash.dig(:info, :uid) || hash[:uid] || "unknown"
+          end
           "[OmniAuth strategy #{strategy.name}] Failed to process omniauth response for #{auth_uid}: #{result.message}"
         end
         inspect_response(Logger::ERROR)
@@ -62,7 +69,7 @@ module Authentication
 
       # Create or update the user from omniauth
       # and assign non-nil parameters from the registration form - if any
-      assignable_params = (additional_user_params || {}).reject { |_, v| v.nil? }
+      assignable_params = (additional_user_params || {}).compact
       update_user_from_omniauth!(assignable_params)
 
       # If we have a new or invited user, we still need to register them
@@ -134,7 +141,7 @@ module Authentication
       find_invited_user ||
         find_existing_user ||
         remap_existing_user ||
-        initialize_new_user
+        User.new
     end
 
     ##
@@ -142,12 +149,17 @@ module Authentication
     def find_invited_user
       return unless session.include?(:invitation_token)
 
-      tok = Token::Invitation.find_by value: session[:invitation_token]
-      return unless tok
+      token = Token::Invitation.find_by value: session[:invitation_token]
+      return unless token
 
-      tok.user.tap do |user|
-        user.identity_url = user_attributes[:identity_url]
-        tok.destroy
+      token.user.tap do |user|
+        if identity_url.present?
+          slug, external_id = identity_url.split(":", 2)
+          link = user.user_auth_provider_links.find_or_initialize_by(auth_provider: AuthProvider.find_by!(slug:))
+          link.external_id = external_id
+          link.save!
+        end
+        token.destroy
         session.delete :invitation_token
       end
     end
@@ -155,7 +167,11 @@ module Authentication
     ##
     # Find an existing user by the identity url
     def find_existing_user
-      User.find_by(identity_url:)
+      if developer_provider?
+        User.find_by(mail: auth_hash[:uid])
+      else
+        UserAuthProviderLink.with_identity_url(identity_url).first&.user
+      end
     end
 
     ##
@@ -164,13 +180,6 @@ module Authentication
       return unless Setting.oauth_allow_remapping_of_existing_users?
 
       User.not_builtin.find_by_login(user_attributes[:login])
-    end
-
-    ##
-    # Create the new user and try to activate it
-    # according to settings and system limits
-    def initialize_new_user
-      User.new(identity_url: user_attributes[:identity_url])
     end
 
     ##
@@ -276,14 +285,17 @@ module Authentication
     # (in case of transient nameIds)
     def identity_url_from_omniauth
       identifier = auth_hash[:info][:uid] || auth_hash[:uid]
-      "#{auth_hash[:provider]}:#{identifier}"
+      "#{auth_hash[:provider]}:#{identifier}" unless developer_provider?
     end
 
     ##
-    # Try to provide some context of the auth_hash in case of errors
-    def auth_uid
-      hash = auth_hash || {}
-      hash.dig(:info, :uid) || hash[:uid] || "unknown"
+    # Indicates whether OmniAuth::Strategies::Delevoper strategy is used.
+    # https://github.com/omniauth/omniauth/blob/0bcfd5b25bf946422cd4d9c40c4f514121ac04d6/lib/omniauth/strategies/developer.rb
+    # if true:
+    #   identity_url should no be set i
+    #   user should be found by mail, because mail plays uid role in developer strategy
+    def developer_provider?
+      Rails.env.local? && auth_hash[:provider] == "developer"
     end
   end
 end

@@ -1049,10 +1049,12 @@ RSpec.describe AccountController, :skip_2fa_stage do
 
   describe "registering through auth source" do
     context "when not providing all required fields" do
-      let(:omniauth_strategy) { double("Google Strategy", name: "google") } # rubocop:disable RSpec/VerifiedDoubles
+      let(:slug) { "google" }
+      let(:omniauth_strategy) { double("Google Strategy", name: slug) } # rubocop:disable RSpec/VerifiedDoubles
+      let!(:oidc_google) { create(:oidc_provider_google, slug:) }
       let(:omniauth_hash) do
         OmniAuth::AuthHash.new(
-          provider: "google",
+          provider: slug,
           strategy: omniauth_strategy,
           uid: "123545",
           info: { name: "foo",

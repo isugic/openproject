@@ -96,6 +96,7 @@ class User < Principal
   has_many :emoji_reactions, dependent: :destroy
   has_many :reminders, foreign_key: "creator_id", dependent: :destroy, inverse_of: :creator
   has_many :remote_identities, dependent: :destroy
+  has_many :user_auth_provider_links, dependent: :destroy
 
   # Users blocked via brute force prevention
   # use lambda here, so time is evaluated on each query
@@ -308,11 +309,18 @@ class User < Principal
     end
   end
 
-  def authentication_provider
-    return nil if identity_url.blank?
+  def active_user_auth_provider_link
+    # note: order("updated_at") is not used, because it returns nil if relation is not persisted
+    user_auth_provider_links.max_by(&:updated_at)
+  end
 
-    slug = identity_url.split(":", 2).first
-    AuthProvider.find_by(slug:)
+  def identity_url
+    link = active_user_auth_provider_link
+    "#{link.auth_provider.slug}:#{link.external_id}" if link.present?
+  end
+
+  def authentication_provider
+    active_user_auth_provider_link&.auth_provider
   end
 
   # Return user's authentication provider for display
@@ -373,7 +381,7 @@ class User < Principal
 
   # Is the user authenticated via an external authentication source via OmniAuth?
   def uses_external_authentication?
-    identity_url.present?
+    user_auth_provider_links.exists?
   end
 
   #
@@ -548,7 +556,7 @@ class User < Principal
   #   - OmniAuth
   #   - LDAP
   def missing_authentication_method?
-    identity_url.nil? && passwords.empty? && ldap_auth_source_id.nil?
+    !uses_external_authentication? && passwords.empty? && ldap_auth_source_id.nil?
   end
 
   # Returns the anonymous user.  If the anonymous user does not exist, it is created.  There can be only

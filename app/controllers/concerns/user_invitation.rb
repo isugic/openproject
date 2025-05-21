@@ -103,7 +103,7 @@ module UserInvitation
   end
 
   def reset_login(user_id)
-    User.where(id: user_id).update_all identity_url: nil
+    UserAuthProviderLink.where(user_id:).destroy_all
     UserPassword.where(user_id:).destroy_all
   end
 

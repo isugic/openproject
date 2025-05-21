@@ -41,11 +41,8 @@ RSpec.describe "users/edit" do
   end
 
   context "authentication provider" do
-    let(:user) do
-      build(:user, id: 1, # id is required to create route to edit
-                   identity_url: "test_provider:veryuniqueid")
-    end
-    let!(:provider) { create(:oidc_provider, slug: "test_provider", display_name: "The Test Provider") }
+    let(:user) { create(:user, identity_url: "#{provider}:veryuniqueid") }
+    let(:provider) { create(:oidc_provider, slug: "test_provider", display_name: "The Test Provider") }
 
     before do
       assign(:user, user)

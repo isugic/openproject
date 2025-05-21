@@ -126,7 +126,7 @@ module Users
     end
 
     def skip_omniauth_user?
-      user.identity_url.blank?
+      user.user_auth_provider_links.blank?
     end
 
     def limited_provider?(user)

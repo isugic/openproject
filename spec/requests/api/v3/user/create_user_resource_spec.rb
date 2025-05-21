@@ -45,6 +45,7 @@ RSpec.describe API::V3::Users::UsersAPI do
       language: "de"
     }
   end
+  let(:auth_provider) { create(:oidc_provider_google) }
 
   before do
     login_as(current_user)
@@ -142,11 +143,9 @@ RSpec.describe API::V3::Users::UsersAPI do
       end
 
       context "with identity_url" do
-        let(:identity_url) { "google:3289272389298" }
+        let(:identity_url) { "#{auth_provider.slug}:3289272389298" }
 
-        before do
-          parameters[:identityUrl] = identity_url
-        end
+        before { parameters[:identityUrl] = identity_url }
 
         it "creates the user with the given identity_url" do
           send_request
@@ -201,7 +200,7 @@ RSpec.describe API::V3::Users::UsersAPI do
 
     describe "active status" do
       context "with identity_url" do
-        let(:identity_url) { "google:3289272389298" }
+        let(:identity_url) { "#{auth_provider.slug}:3289272389298" }
 
         before do
           parameters[:identityUrl] = identity_url

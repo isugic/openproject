@@ -289,7 +289,7 @@ class AccountController < ApplicationController
 
     invited = session[:invitation_token].present?
     get = request.get? && allow
-    post = (request.post? || request.patch?) && (session[:auth_source_registration] || allow)
+    post = (request.post? || request.patch?) && (session[:auth_source_registration].present? || allow)
 
     invited || get || post
   end
@@ -333,7 +333,7 @@ class AccountController < ApplicationController
       @user.consented_at = DateTime.now
     end
 
-    if session[:auth_source_registration]
+    if session[:auth_source_registration].present?
       register_with_auth_source(@user)
     else
       register_plain_user(@user)

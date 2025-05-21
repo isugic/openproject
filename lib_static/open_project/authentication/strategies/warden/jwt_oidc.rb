@@ -30,7 +30,7 @@ module OpenProject
                                            error_description: "Requires scope #{scope} to access this resource."
                 end
 
-                user = User.find_by(identity_url: "#{provider.slug}:#{payload['sub']}")
+                user = UserAuthProviderLink.where(auth_provider: provider, external_id: payload["sub"]).first&.user
                 authentication_result(user)
               end,
               ->(error) { fail_with_header!(error: "invalid_token", error_description: error) }
