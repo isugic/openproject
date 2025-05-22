@@ -30,10 +30,6 @@ See COPYRIGHT and LICENSE files for more details.
 <% content_controller "repository-navigation", dynamic: true %>
 <%= render partial: "repository_header", locals: { empty: false } %>
 
-<div class="repository-breadcrumbs">
-  <%= render partial: "breadcrumbs",
-             locals: { path: @path, revision: @rev }.merge(kind: "dir") %>
-</div>
 
 <% if !@entries.nil? && authorize_for('repositories', 'browse') %>
   <%= render partial: "dir_list" %>
