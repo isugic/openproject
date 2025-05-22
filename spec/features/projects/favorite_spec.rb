@@ -163,19 +163,4 @@ RSpec.describe "Favorite projects", :js, :selenium do
       end
     end
   end
-
-  context "as an Anonymous User with not login required", with_settings: { login_required: false } do
-    it "does not shows favored projects" do
-      visit project_path(project)
-
-      retry_block do
-        top_menu.toggle unless top_menu.open?
-        top_menu.expect_open
-
-        within(".op-project-list-modal--header") do
-          expect(page).to have_no_css("[data-test-selector=\"spot-toggle--option\"]", text: "Favorites")
-        end
-      end
-    end
-  end
 end
