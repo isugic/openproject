@@ -37,32 +37,45 @@ See COPYRIGHT and LICENSE files for more details.
     ) }
     header.with_breadcrumbs(breadcrumbs(project: @project, path: @path, rev: @rev))
     if !empty && User.current.allowed_in_project?(:browse_repository, @project)
-      header.with_action_button(
+      header.with_action_icon_button(
         tag: :a,
+        icon: :graph,
+        label: t(:label_statistics),
         mobile_icon: :graph,
         mobile_label: t(:label_statistics),
         size: :medium,
         href: stats_project_repository_path(@project),
         aria: { label: t(:label_statistics) },
         title: t(:label_statistics)
-      ) do |button|
-        button.with_leading_visual_icon(icon: :graph)
-        t(:label_statistics)
-      end
+      )
     end
     if User.current.allowed_in_project?(:manage_repository, @project)
-      header.with_action_button(
+      header.with_action_icon_button(
         tag: :a,
+        icon: :gear,
+        label: t(:label_setting_plural),
         mobile_icon: :gear,
         mobile_label: t(:label_setting_plural),
         size: :medium,
         href: project_settings_repository_path(@project),
         aria: { label: t(:label_setting_plural) },
         title: t(:label_setting_plural)
-      ) do |button|
-        button.with_leading_visual_icon(icon: :gear)
-        t(:label_setting_plural)
-      end
+      )
+    end
+    if @instructions && @instructions.available?
+      header.with_action_icon_button(
+        tag: :a,
+        icon: :info,
+        label: t("repositories.checkout.show_instructions"),
+        mobile_icon: :info,
+        mobile_label: t("repositories.checkout.show_instructions"),
+        size: :medium,
+        id: "repository--checkout-instructions-toggle",
+        class: "persistent-toggle--click-handler",
+        href: "",
+        aria: { label: t(:label_setting_plural) },
+        title: tt("repositories.checkout.show_instructions")
+      )
     end
   end
 %>
@@ -72,7 +85,7 @@ See COPYRIGHT and LICENSE files for more details.
     ) %>
 
 <% if @instructions && @instructions.available? %>
-  <li class="toolbar-item toolbar-input-group hidden-for-mobile">
+  <li class="toolbar-item toolbar-input-group repository-checkout-container hidden-for-mobile">
     <div class="toolbar-input-group--affix -prepend">
       <span><%= @instructions.checkout_command %></span>
     </div>
@@ -89,13 +102,6 @@ See COPYRIGHT and LICENSE files for more details.
       <%= op_icon("icon-copy") %>
       <span class="hidden-for-sighted"><%= t(:button_copy_to_clipboard) %></span>
     </button>
-  </li>
-  <li class="toolbar-item -icon-only">
-    <a id="repository--checkout-instructions-toggle"
-       class="persistent-toggle--click-handler button"
-       title="<%= t("repositories.checkout.show_instructions") %>">
-      <%= op_icon("button--icon icon-info1") %>
-    </a>
   </li>
 <% end %>
 <%
