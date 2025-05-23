@@ -274,37 +274,30 @@ module RepositoriesHelper
   def breadcrumbs(project:, path:, rev:)
     breadcrumb_items = []
 
-    # First breadcrumb: project overview link with project name
     breadcrumb_items << {
       href: project_overview_path(project.id),
       text: project.name
     }
 
     breadcrumb_items << {
-      href: url_for({ action: "show", project_id: project, repo_path: nil, rev: rev }),
-      text: t(
-        "repositories.named_repository",
-        vendor_name: @repository.class.vendor_name
-      )
+      href: url_for(action: "show", project_id: project, repo_path: nil, rev: rev),
+      text: t("repositories.named_repository", vendor_name: @repository.class.vendor_name)
     }
-    # Directories
-    dirs = path.to_s.split("/")
+
+    dirs = path.to_s.split("/").compact_blank
     link_path = ""
 
     dirs.each_with_index do |dir, index|
-      next if dir.blank?
+      link_path = File.join(link_path, dir)
 
-      link_path << "/" unless link_path.empty?
-      link_path << dir
-
-      if index == dirs.size - 1
-        breadcrumb_items << { text: dir }
-      else
-        breadcrumb_items << {
-          href: url_for(action: "show", project_id: project, repo_path: to_path_param(link_path), rev: rev),
-          text: dir
-        }
-      end
+      breadcrumb_items << if index == dirs.size - 1
+                            { text: dir }
+                          else
+                            {
+                              href: url_for(action: "show", project_id: project, repo_path: to_path_param(link_path), rev: rev),
+                              text: dir
+                            }
+                          end
     end
 
     breadcrumb_items
