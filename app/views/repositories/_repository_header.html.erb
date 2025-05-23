@@ -35,17 +35,43 @@ See COPYRIGHT and LICENSE files for more details.
       "repositories.named_repository",
       vendor_name: @repository.class.vendor_name
     ) }
-    header.with_breadcrumbs(breadcrumbs(project: @project,
-                                                          path: @path,
-                                                          rev: @rev))
+    header.with_breadcrumbs(breadcrumbs(project: @project, path: @path, rev: @rev))
+    if !empty && User.current.allowed_in_project?(:browse_repository, @project)
+      header.with_action_button(
+        tag: :a,
+        mobile_icon: :graph,
+        mobile_label: t(:label_statistics),
+        size: :medium,
+        href: stats_project_repository_path(@project),
+        aria: { label: t(:label_statistics) },
+        title: t(:label_statistics)
+      ) do |button|
+        button.with_leading_visual_icon(icon: :graph)
+        t(:label_statistics)
+      end
+    end
+    if User.current.allowed_in_project?(:manage_repository, @project)
+      header.with_action_button(
+        tag: :a,
+        mobile_icon: :gear,
+        mobile_label: t(:label_setting_plural),
+        size: :medium,
+        href: project_settings_repository_path(@project),
+        aria: { label: t(:label_setting_plural) },
+        title: t(:label_setting_plural)
+      ) do |button|
+        button.with_leading_visual_icon(icon: :gear)
+        t(:label_setting_plural)
+      end
+    end
   end
 %>
+<%= call_hook(
+      :repositories_navigation_toolbar,
+      { repository: @repository, project: @project, repository_empty: empty }
+    ) %>
 
-<%= toolbar title: t(
-      "repositories.named_repository",
-      vendor_name: @repository.class.vendor_name
-    ) do %>
-  <% if @instructions && @instructions.available? %>
+<% if @instructions && @instructions.available? %>
   <li class="toolbar-item toolbar-input-group hidden-for-mobile">
     <div class="toolbar-input-group--affix -prepend">
       <span><%= @instructions.checkout_command %></span>
@@ -71,27 +97,6 @@ See COPYRIGHT and LICENSE files for more details.
       <%= op_icon("button--icon icon-info1") %>
     </a>
   </li>
-  <% end %>
-  <% if !empty && User.current.allowed_in_project?(:browse_repository, @project) %>
-  <li class="toolbar-item -icon-only">
-    <%= link_to stats_project_repository_path(@project),
-                class: "button", title: t(:label_statistics) do %>
-      <%= op_icon("button--icon icon-chart1") %>
-    <% end %>
-  </li>
-  <% end %>
-  <%= call_hook(
-        :repositories_navigation_toolbar,
-        { repository: @repository, project: @project, repository_empty: empty }
-      ) %>
-  <% if User.current.allowed_in_project?(:manage_repository, @project) %>
-    <li class="toolbar-item -icon-only">
-      <%= link_to project_settings_repository_path(@project),
-                  class: "button", title: t(:label_setting_plural) do %>
-        <%= op_icon("button--icon icon-settings") %>
-      <% end %>
-    </li>
-  <% end %>
 <% end %>
 <%
   # @rev is revision or git branch or tag.
