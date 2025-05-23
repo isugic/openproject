@@ -59,7 +59,15 @@
               classes: "work-packages-activities-tab-journals-new-component--ck-editor-column",
               mb: 3
             ) do
-              render(WorkPackages::ActivitiesTab::Journals::NotesForm.new(f))
+              render(
+                Primer::Box.new(
+                  data: {
+                    controller: block_note_stimulus_controller,
+                    "application-target": "dynamic",
+                    block_note_stimulus_controller("-target") => "root"
+                  }
+                )
+              )
             end
 
             form_container.with_row(flex_layout: true, justify_content: adding_internal_comment_allowed? ? :space_between : :flex_end) do |form_container_row|

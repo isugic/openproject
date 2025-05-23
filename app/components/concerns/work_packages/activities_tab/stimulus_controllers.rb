@@ -36,6 +36,7 @@ module WorkPackages
       def index_stimulus_controller(suffix = nil) = "work-packages--activities-tab--index#{suffix}"
       def internal_comment_stimulus_controller(suffix = nil) = "work-packages--activities-tab--internal-comment#{suffix}"
       def quote_comments_stimulus_controller(suffix = nil) = "work-packages--activities-tab--quote-comment#{suffix}"
+      def block_note_stimulus_controller(suffix = nil) = "work-packages--activities-tab--block-note#{suffix}"
 
       def index_stimulus_controller_outlet_selector = "##{WorkPackages::ActivitiesTab::IndexComponent.index_content_wrapper_key}"
 
