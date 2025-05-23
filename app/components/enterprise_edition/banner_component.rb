@@ -60,18 +60,29 @@ module EnterpriseEdition
                    dismissable: false,
                    show_always: false,
                    dismiss_key: feature_key,
+                   days_left: nil,
+                   trial_plan: nil,
                    **system_arguments)
       @variant = fetch_or_fallback(VARIANT_OPTIONS, variant, DEFAULT_VARIANT)
       @image = image
       @dismissable = dismissable
       @dismiss_key = dismiss_key
       @show_always = show_always
+      @days_left = days_left
+      @trial_plan = trial_plan
 
       self.feature_key = feature_key
       self.i18n_scope = i18n_scope
 
       if @variant == :medium && @image.nil?
         raise ArgumentError, "The 'image' parameter is required when the variant is :medium."
+      end
+
+      if teaser? && @days_left.nil?
+        raise ArgumentError, "The 'days_left' parameter is required when the feature_key is :teaser."
+      end
+      if teaser? && @trial_plan.nil?
+        raise ArgumentError, "The 'trial_plan' parameter is required when the feature_key is :teaser."
       end
 
       @system_arguments = system_arguments
@@ -101,6 +112,10 @@ module EnterpriseEdition
       @variant == :inline
     end
 
+    def teaser?
+      feature_key == :teaser
+    end
+
     def wrapper_key
       "enterprise_banner_#{feature_key}"
     end
@@ -108,6 +123,7 @@ module EnterpriseEdition
     private
 
     def render?
+      return true if teaser?
       return true if @show_always
 
       !(EnterpriseToken.hide_banners? || feature_available? || dismissed?)
@@ -121,6 +137,17 @@ module EnterpriseEdition
       return false unless @dismissable
 
       User.current.pref.dismissed_banner?(@dismiss_key)
+    end
+
+    def trial_buy_now_button
+      render(Primer::Beta::Button.new(
+               classes: "upsell-colored-background hidden-for-mobile",
+               tag: :a,
+               href: "/admin/subscriptions/new",
+               align_self: :center
+             )) do
+        I18n.t(:button_buy_now)
+      end
     end
   end
 end

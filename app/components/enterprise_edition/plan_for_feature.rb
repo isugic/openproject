@@ -37,20 +37,28 @@ module EnterpriseEdition
       attr_accessor :i18n_scope
     end
 
+    def teaser?
+      feature_key == :teaser
+    end
+
     def title
       I18n.t(:title, scope: i18n_scope, default: default_title)
     end
 
     def default_title
-      I18n.t(feature_key, scope: :"ee.features")
+      teaser? ? I18n.t("ee.teaser.title", count: @days_left, trial_plan: @trial_plan) : I18n.t(feature_key, scope: :"ee.features")
     end
 
     def description
-      @description || begin
-        if I18n.exists?(:description_html, scope: i18n_scope)
-          I18n.t(:description_html, scope: i18n_scope).html_safe
-        else
-          I18n.t(:description, scope: i18n_scope)
+      if teaser?
+        I18n.t("ee.teaser.description", trial_plan: @trial_plan)
+      else
+        @description || begin
+          if I18n.exists?(:description_html, scope: i18n_scope)
+            I18n.t(:description_html, scope: i18n_scope).html_safe
+          else
+            I18n.t(:description, scope: i18n_scope)
+          end
         end
       end
     rescue I18n::MissingTranslationData => e

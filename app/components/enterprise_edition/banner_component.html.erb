@@ -36,7 +36,7 @@
 
           flex.with_row(classes: "op-enterprise-banner--description") do
             concat render(Primer::Beta::Text.new(tag: :p)) { description }
-            concat render(Primer::Beta::Text.new(tag: :p)) { plan_text }
+            concat render(Primer::Beta::Text.new(tag: :p)) { plan_text } unless teaser?
           end
 
           if features.present?
@@ -46,7 +46,11 @@
           end
 
           flex.with_row(mt: 1) do
-            render EnterpriseEdition::UpsellButtonsComponent.new(feature_key)
+            if teaser?
+              trial_buy_now_button
+            else
+              render EnterpriseEdition::UpsellButtonsComponent.new(feature_key)
+            end
           end
         end
       end
