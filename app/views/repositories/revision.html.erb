@@ -27,27 +27,96 @@ See COPYRIGHT and LICENSE files for more details.
 
 ++#%>
 
-<%= toolbar title: "#{t(:label_revision)} #{format_revision(@changeset)}" do %>
-  <li class="toolbar-item">
-    <% if @changeset.previous.nil? %>
-      <button class="button" disabled="disabled"><%= t(:label_previous) %></button>
-    <% else %>
-      <%= link_to_revision(@changeset.previous, @project, text: t(:label_previous), class: "button") %>
-    <% end %>
-  </li>
-  <li class="toolbar-item">
-    <% if @changeset.next.nil? %>
-      <button class="button" disabled="disabled"><%= t(:label_next) %></button>
-    <% else %>
-      <%= link_to_revision(@changeset.next, @project, text: t(:label_next), class: "button") %>
-    <% end %>
-  </li>
-  <li class="toolbar-item">
-    <%= form_tag({ controller: "/repositories", action: "revision", project_id: @project }, method: :get) do %>
-      <%= text_field_tag :rev, @rev, placeholder: t(:label_revision) %>
-    <% end %>
-  </li>
+<%= render Primer::OpenProject::PageHeader.new do |header| %>
+  <% header.with_title do %>
+    <%= "#{t(:label_revision)} #{format_revision(@changeset)}" %>
+  <% end %>
+
+  <% header.with_breadcrumbs([{
+                                href: project_overview_path(@project.id),
+                                text: @project.name
+                              },
+                              {
+                                href: url_for({ action: "show", project_id: @project, repo_path: nil, rev: @rev }),
+                                text: t(
+                                  "repositories.named_repository",
+                                  vendor_name: @repository.class.vendor_name
+                                )
+                              },
+                              {
+                                href: revisions_project_repository_path(@project),
+                                text: t(:label_revision_plural)
+                              },
+                              "#{t(:label_revision)} #{format_revision(@changeset)}"
+                             ]) %>
+
+  <%# Previous Revision Button %>
+  <% if @changeset.previous.present? %>
+    <% header.with_action_button(
+         tag: :a,
+         icon: "arrow-left",
+         label: t(:label_previous),
+         mobile_icon: "arrow-left",
+         mobile_label: t(:label_previous),
+         href: url_for(controller: "/repositories", action: "revision", project_id: @project, rev: @changeset.previous.identifier),
+         title: t(:label_revision_id, value: format_revision(@changeset.previous)),
+         aria: { label: t(:label_previous) }
+       ) do |button|
+      button.with_leading_visual_icon(icon: "arrow-left")
+      t(:label_previous)
+    end %>
+  <% else %>
+    <% header.with_action_button(
+         tag: :button,
+         icon: "arrow-left",
+         label: t(:label_previous),
+         mobile_icon: "arrow-left",
+         mobile_label: t(:label_previous),
+         disabled: true,
+         title: t(:label_previous),
+         aria: { label: t(:label_previous) }
+       ) do |button|
+      button.with_leading_visual_icon(icon: "arrow-left")
+      t(:label_previous)
+    end %>
+  <% end %>
+
+  <%# Next Revision Button %>
+  <% if @changeset.next.present? %>
+    <% header.with_action_button(
+         tag: :a,
+         icon: "arrow-right",
+         label: t(:label_next),
+         mobile_icon: "arrow-right",
+         mobile_label: t(:label_next),
+         href: url_for(controller: "/repositories", action: "revision", project_id: @project, rev: @changeset.next.identifier),
+         title: t(:label_revision_id, value: format_revision(@changeset.next)),
+         aria: { label: t(:label_next) }
+       ) do |button|
+      button.with_leading_visual_icon(icon: "arrow-right")
+      t(:label_next)
+    end %>
+  <% else %>
+    <% header.with_action_button(
+         tag: :button,
+         mobile_icon: "arrow-right",
+         mobile_label: t(:label_next),
+         disabled: true,
+         title: t(:label_next),
+         aria: { label: t(:label_next) }
+       ) do |button|
+      button.with_leading_visual_icon(icon: "arrow-right")
+      t(:label_next)
+    end %>
+  <% end %>
+
+  <%# Revision Search Form Button (if needed) could go here too) %>
 <% end %>
+<div class="toolbar-input-group">
+  <%= form_tag({ controller: "/repositories", action: "revision", project_id: @project }, method: :get) do %>
+    <%= text_field_tag :rev, @rev, placeholder: t(:label_revision) %>
+  <% end %>
+</div>
 <p><% if @changeset.scmid %>ID: <%= h(@changeset.scmid) %><br>
   <% end %>
   <span class="author"><%= authoring(@changeset.committed_on, @changeset.author) %></span></p>

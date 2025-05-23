@@ -45,6 +45,10 @@ See COPYRIGHT and LICENSE files for more details.
                                href: revisions_project_repository_path(@project),
                                text: t(:label_revision_plural)
                              },
+                             {
+                               href: show_revision_project_repository_path(project_id: @project.id, rev: @rev),
+                               text: "#{t(:label_revision)} #{format_revision(@changeset)}"
+                             },
                              "#{t(:label_revision)} #{@diff_format_revisions} #{@path}"
                             ])
   end
