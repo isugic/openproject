@@ -31,9 +31,8 @@
 module EnterpriseHelper
   def enterprise_angular_trial_inputs
     trial_key = Token::EnterpriseTrialKey.find_by(user_id: User.system.id)
-    token = EnterpriseToken.current
 
-    if token.present? || trial_key.blank?
+    if EnterpriseToken.active? || trial_key.blank?
       enterprise_angular_static_inputs
     else
       enterprise_angular_static_inputs.merge(

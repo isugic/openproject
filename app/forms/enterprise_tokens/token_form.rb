@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #-- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
@@ -25,23 +27,16 @@
 #
 # See COPYRIGHT and LICENSE files for more details.
 #++
-
-module SecurityBadgeHelper
-  def security_badge_url(args = {})
-    uri = URI.parse(OpenProject::Configuration[:security_badge_url])
-    info = {
-      uuid: Setting.installation_uuid,
-      type: OpenProject::Configuration[:installation_type],
-      version: OpenProject::VERSION.to_semver,
-      db: ActiveRecord::Base.connection.adapter_name.downcase,
-      lang: User.current.try(:language),
-      ee: EnterpriseToken.active?
-    }.merge(args.symbolize_keys)
-    uri.query = info.to_query
-    uri.to_s
-  end
-
-  def display_security_badge_graphic?
-    OpenProject::Configuration.security_badge_displayed? && Setting.security_badge_displayed?
+module EnterpriseTokens
+  class TokenForm < ApplicationForm
+    form do |f|
+      f.text_area(
+        name: :encoded_token,
+        label: I18n.t("admin.enterprise.create_dialog.type_token_text"),
+        placeholder: I18n.t("admin.enterprise.create_dialog.token_placeholder"),
+        rows: 10,
+        style: "resize: none"
+      )
+    end
   end
 end

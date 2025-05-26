@@ -1,7 +1,7 @@
 <% title =  @current_token.present? ? t('admin.enterprise.replace_token') : t('admin.enterprise.add_token')  %>
 <%= augmented_collapsible_section initiallyExpanded: !@current_token.present?,
                                   title: title do %>
-  <%= labelled_tabular_form_for @token,
+  <%= labelled_tabular_form_for EnterpriseToken.new,
                url: { action: :create },
                html: { class: 'token-form form -vertical' },
                method: :post do |f| %>
@@ -18,6 +18,6 @@
 
     <div class="form--space"></div>
     <%= styled_button_tag t(:button_save), id: 'token-submit-button', class: '-primary -with-icon icon-checkmark' %>
-    <%= link_to t(:button_cancel), { action: :show }, class: 'button -with-icon icon-cancel' %>
+    <%= link_to t(:button_cancel), { action: :index  }, class: 'button -with-icon icon-cancel' %>
   <% end %>
 <% end %>

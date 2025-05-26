@@ -10,7 +10,7 @@
   end
 %>
 
-<%= error_messages_for "token" %>
+<%= error_messages_for "token" if @token %>
 
 <% if @current_token.present? %>
   <%= render partial: "current" %>

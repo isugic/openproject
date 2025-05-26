@@ -471,10 +471,15 @@ Rails.application.routes.draw do
   scope "admin" do
     resource :announcements, only: %i[edit update]
     constraints(Constraints::Enterprise) do
-      resource :enterprise, only: %i[show create destroy]
-      scope controller: "enterprises" do
-        post "enterprise/save_trial_key" => "enterprises#save_trial_key"
-        delete "enterprise/delete_trial_key" => "enterprises#delete_trial_key"
+      resources :enterprise_tokens, only: %i[index show new create destroy] do
+        member do
+          get :destroy_dialog
+        end
+
+        collection do
+          post :save_trial_key
+          delete :delete_trial_key
+        end
       end
     end
 

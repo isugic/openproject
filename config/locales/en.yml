@@ -88,6 +88,14 @@ en:
         main-menu-bg-color: "Left side menu's background color."
       theme_warning: Changing the theme will overwrite you custom style. The design will then be lost. Are you sure you want to continue?
     enterprise:
+      delete_dialog:
+        title: "Delete enterprise token"
+        heading: "Delete this enterprise token?"
+        confirmation: "Are you sure you want to delete this Enterprise edition support token?"
+      create_dialog:
+        title: "Add Enterprise token"
+        type_token_text: "Type support token text"
+        token_placeholder: "Paste your Enterprise edition support token here"
       upgrade_to_ee: "Upgrade to the Enterprise edition"
       add_token: "Upload an Enterprise edition support token"
       delete_token_modal:
@@ -986,6 +994,7 @@ en:
         domain: "Domain"
         starts_at: "Valid since"
         subscriber: "Subscriber"
+        plan: "Plan"
         encoded_token: "Enterprise support token"
         active_user_count_restriction: "Maximum active users"
       grids/grid:
@@ -1594,6 +1603,9 @@ en:
       custom_action: "Custom action"
       custom_field: "Custom field"
       "doorkeeper/application": "OAuth application"
+      enterprise_token:
+        one: "Enterprise token"
+        other: "Enterprise tokens"
       forum: "Forum"
       global_role: "Global role"
       group: "Group"
@@ -2685,6 +2697,7 @@ en:
   label_dashboard: "Dashboard"
   label_database_version: "PostgreSQL version"
   label_date: "Date"
+  label_dates: "Dates"
   label_date_and_time: "Date and time"
   label_date_format: "Date format"
   label_date_from: "From"

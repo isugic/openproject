@@ -29,20 +29,14 @@
 module OpenProject
   module Enterprise
     class << self
-      def token
-        EnterpriseToken.current.presence
-      end
-
       def upgrade_url
         "#{Setting.protocol}://#{Setting.host_name}#{upgrade_path}"
       end
 
+      delegate :user_limit, to: EnterpriseToken
+
       def upgrade_path
         url_helpers.enterprise_path
-      end
-
-      def user_limit
-        Hash(token.restrictions)[:active_user_count] if token
       end
 
       def active_user_count

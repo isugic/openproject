@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #-- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
@@ -27,10 +29,22 @@
 #++
 class EnterpriseToken < ApplicationRecord
   class << self
-    def current
-      RequestStore.fetch(:current_ee_token) do
-        set_current_token
+    def all_tokens
+      all.sort_by(&:sort_key)
+    end
+
+    def active_tokens
+      RequestStore.fetch(:current_ee_tokens) do
+        set_active_tokens
       end
+    end
+
+    def active_non_trial_tokens
+      active_tokens.reject(&:trial?)
+    end
+
+    def active_trial_tokens
+      active_tokens.select(&:trial?)
     end
 
     def table_exists?
@@ -38,15 +52,31 @@ class EnterpriseToken < ApplicationRecord
     end
 
     def allows_to?(feature)
-      Authorization::EnterpriseService.new(current).call(feature).result
+      active_tokens.any? { |token| Authorization::EnterpriseService.new(token).call(feature).result }
     end
 
     def active?
-      current && !current.expired?
+      active_tokens.any?
     end
 
     def hide_banners?
       OpenProject::Configuration.ee_hide_banners?
+    end
+
+    def available_features
+      active_tokens.map(&:available_features).flatten.uniq
+    end
+
+    def user_limit
+      non_trial_user_limit.presence || trial_user_limit
+    end
+
+    def non_trial_user_limit
+      active_non_trial_tokens.map { |token| Hash(token.restrictions)[:active_user_count] }.max
+    end
+
+    def trial_user_limit
+      active_trial_tokens.map { |token| Hash(token.restrictions)[:active_user_count] }.max
     end
 
     def banner_type_for(feature:)
@@ -57,23 +87,30 @@ class EnterpriseToken < ApplicationRecord
       end
     end
 
-    def set_current_token
-      token = EnterpriseToken.order(Arel.sql("created_at DESC")).first
+    def set_active_tokens
+      EnterpriseToken
+        .order(Arel.sql("created_at DESC"))
+        .to_a
+        .reject(&:expired?)
+    end
 
-      if token&.token_object
-        token
-      end
+    def clear_current_tokens_cache
+      RequestStore.delete :current_ee_tokens
     end
   end
+
+  FAR_FUTURE_DATE = Date.new(9999, 1, 1)
+  private_constant :FAR_FUTURE_DATE
 
   validates :encoded_token, presence: true
   validate :valid_token_object
   validate :valid_domain
 
-  before_save :unset_current_token
-  before_destroy :unset_current_token
+  before_save :clear_current_tokens_cache
+  before_destroy :clear_current_tokens_cache
 
   delegate :will_expire?,
+           :trial?,
            :subscriber,
            :mail,
            :company,
@@ -99,10 +136,7 @@ class EnterpriseToken < ApplicationRecord
     Authorization::EnterpriseService.new(self).call(action).result
   end
 
-  def unset_current_token
-    # Clear current cache
-    RequestStore.delete :current_ee_token
-  end
+  delegate :clear_current_tokens_cache, to: :EnterpriseToken
 
   def expired?(reprieve: true)
     token_object.expired?(reprieve:) || invalid_domain?
@@ -114,6 +148,10 @@ class EnterpriseToken < ApplicationRecord
     return false unless token_object&.validate_domain?
 
     !token_object.valid_domain?(Setting.host_name)
+  end
+
+  def sort_key
+    [expires_at || FAR_FUTURE_DATE, starts_at || FAR_FUTURE_DATE]
   end
 
   private

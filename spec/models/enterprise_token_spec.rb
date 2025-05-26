@@ -31,26 +31,41 @@
 require "spec_helper"
 
 RSpec.describe EnterpriseToken do
-  let(:object) { OpenProject::Token.new domain: Setting.host_name }
-  let(:ee_hide_banners) { true }
-
-  subject { described_class.new(encoded_token: "foo") }
-
   before do
-    RequestStore.delete :current_ee_token
-    allow(OpenProject::Configuration).to receive(:ee_hide_banners?).and_return(ee_hide_banners)
+    described_class.clear_current_tokens_cache
+
+    # Calls are mocked in mock_token_object for enterprise tokens created by
+    # tests. This line is to call normal implementation when not mocked.
+    allow(OpenProject::Token).to receive(:import).and_call_original
+  end
+
+  def create_enterprise_token(encoded_token_name, **attributes)
+    mock_token_object(encoded_token_name, **attributes)
+    enterprise_token = described_class.new(encoded_token: encoded_token_name)
+    enterprise_token.save!(validate: false)
+    enterprise_token
+  end
+
+  def mock_token_object(encoded_token_name, **attributes)
+    token = OpenProject::Token.new(domain: Setting.host_name,
+                                   expires_at: 1.year.from_now,
+                                   **attributes)
+    allow(OpenProject::Token)
+      .to receive(:import).with(encoded_token_name)
+                          .and_return(token)
+    token
   end
 
   describe ".active?" do
-    before do
-      allow(described_class).to receive(:current).and_return(subject)
-      allow(described_class.current).to receive(:token_object).and_return(object)
-      subject.save!(validate: false)
+    context "without any tokens" do
+      it "returns false" do
+        expect(described_class.active?).to be(false)
+      end
     end
 
     context "with a non expired token" do
       before do
-        allow(object).to receive(:expired?).and_return(false)
+        create_enterprise_token("an_non_expired_token", expires_at: 1.year.from_now)
       end
 
       it "returns true" do
@@ -60,27 +75,39 @@ RSpec.describe EnterpriseToken do
 
     context "with an expired token" do
       before do
-        allow(object).to receive(:expired?).and_return(true)
+        create_enterprise_token(subject.encoded_token, expires_at: Date.yesterday)
       end
 
       it "returns false" do
         expect(described_class.active?).to be(false)
       end
     end
+
+    context "with two tokens: one expired and one active" do
+      before do
+        # expired token
+        create_enterprise_token("an_expired_token", expires_at: Date.yesterday)
+
+        # active token
+        create_enterprise_token("an_active_token", expires_at: 1.year.from_now)
+      end
+
+      it "returns true" do
+        expect(described_class.active?).to be(true)
+      end
+    end
   end
 
   describe ".hide_banners?" do
-    context "when ee manager is visible" do
-      let(:ee_hide_banners) { true }
-
+    context "when ee_hide_banners is true",
+            with_config: { ee_hide_banners: true } do
       it "returns true" do
         expect(described_class).to be_hide_banners
       end
     end
 
-    context "when ee manager is not visible" do
-      let(:ee_hide_banners) { false }
-
+    context "when ee_hide_banners is false",
+            with_config: { ee_hide_banners: false } do
       it "returns false" do
         expect(described_class).not_to be_hide_banners
       end
@@ -124,41 +151,40 @@ RSpec.describe EnterpriseToken do
     end
   end
 
-  describe "existing token" do
-    before do
-      allow_any_instance_of(described_class).to receive(:token_object).and_return(object) # rubocop:disable RSpec/AnyInstance
-      subject.save!(validate: false)
-    end
-
+  context "with an existing token" do
     context "when inner token is active" do
-      it "has an active token" do
-        allow(object).to receive(:expired?).and_return(false)
-        expect(described_class.count).to eq(1)
-        expect(described_class.current).to eq(subject)
-        expect(described_class.current.encoded_token).to eq("foo")
-
-        # Deleting it updates the current token
-        described_class.current.destroy!
-
-        expect(described_class.count).to eq(0)
-        expect(described_class.current).to be_nil
-      end
-
-      it "delegates to the token object" do
-        allow(object).to receive_messages(
+      subject! do
+        mock_token_object(
+          "an_active_token_object",
           subscriber: "foo",
-          mail: "bar",
-          starts_at: Time.zone.today,
-          issued_at: Time.zone.today,
-          expires_at: "never",
+          mail: "bar@example.com",
+          starts_at: Date.current,
+          issued_at: Date.current,
+          expires_at: nil,
           restrictions: { foo: :bar }
         )
+        described_class.create!(encoded_token: "an_active_token_object")
+      end
 
+      it "is returned by .active_tokens" do
+        expect(described_class.count).to eq(1)
+        expect(described_class.active_tokens).to eq([subject])
+        active_token = described_class.active_tokens.first
+        expect(active_token.encoded_token).to eq("an_active_token_object")
+
+        # Deleting it updates the active tokens list
+        active_token.destroy!
+
+        expect(described_class.count).to eq(0)
+        expect(described_class.active_tokens).to be_empty
+      end
+
+      it "delegates calls to the inner token object" do
         expect(subject.subscriber).to eq("foo")
-        expect(subject.mail).to eq("bar")
-        expect(subject.starts_at).to eq(Time.zone.today)
-        expect(subject.issued_at).to eq(Time.zone.today)
-        expect(subject.expires_at).to eq("never")
+        expect(subject.mail).to eq("bar@example.com")
+        expect(subject.starts_at).to eq(Date.current)
+        expect(subject.issued_at).to eq(Date.current)
+        expect(subject.expires_at).to be_nil
         expect(subject.restrictions).to eq(foo: :bar)
       end
 
@@ -188,42 +214,82 @@ RSpec.describe EnterpriseToken do
       end
     end
 
-    context "when inner token is expired" do
-      before do
-        allow(object).to receive(:expired?).and_return(true)
-      end
+    context "when updated with an invalid token" do
+      subject! { create_enterprise_token("an_active_token_object", expires_at: 1.year.from_now) }
 
-      it "has an expired token" do
-        expect(described_class.current).to eq(subject)
-        expect(described_class).not_to be_active
-      end
-    end
-
-    context "when updating it with an invalid token" do
       it "fails validations" do
-        subject.encoded_token = "bar"
-        expect(subject.save).to be_falsey
+        expect { subject.encoded_token = "bar" }
+          .to change(subject, :valid?).from(true).to(false)
       end
     end
   end
 
-  describe "no token" do
-    it do
-      expect(described_class.current).to be_nil
-      expect(described_class).not_to be_active
+  describe ".all_tokens" do
+    it "returns all tokens, ordered from oldest expiration date to latest (non expiring ones are last)" do
+      create_enterprise_token("a_token_expired_recently", expires_at: Date.yesterday)
+      create_enterprise_token("a_token_expiring_soon", expires_at: Date.tomorrow)
+      create_enterprise_token("a_token_without_an_expiration_date", expires_at: nil)
+      create_enterprise_token("a_token_expired_since_one_year", expires_at: Date.current - 1.year)
+      create_enterprise_token("a_token_expiring_in_one_year", expires_at: Date.current + 1.year)
+
+      expect(described_class.all_tokens.map(&:encoded_token))
+        .to eq(%w[
+                 a_token_expired_since_one_year
+                 a_token_expired_recently
+                 a_token_expiring_soon
+                 a_token_expiring_in_one_year
+                 a_token_without_an_expiration_date
+               ])
+    end
+
+    it "sorts by token start date if multiple tokens have the same expiration date" do
+      create_enterprise_token("a_token_started_one_week_ago", starts_at: Date.current - 1.week, expires_at: Date.current + 1.year)
+      create_enterprise_token("a_token_starting_in_one_week", starts_at: Date.current + 1.week, expires_at: Date.current + 1.year)
+      create_enterprise_token("a_token_started_one_year_ago", starts_at: Date.current - 1.year, expires_at: Date.current + 1.year)
+      create_enterprise_token("a_non_expiring_token_starting_in_one_month", starts_at: Date.current + 1.month, expires_at: nil)
+      create_enterprise_token("a_non_expiring_token_started_today", starts_at: Date.current, expires_at: nil)
+      create_enterprise_token("a_non_expiring_token_started_one_month_ago", starts_at: Date.current - 1.month, expires_at: nil)
+
+      expect(described_class.all_tokens.map(&:encoded_token))
+        .to eq(%w[
+                 a_token_started_one_year_ago
+                 a_token_started_one_week_ago
+                 a_token_starting_in_one_week
+                 a_non_expiring_token_started_one_month_ago
+                 a_non_expiring_token_started_today
+                 a_non_expiring_token_starting_in_one_month
+               ])
     end
   end
 
-  describe "invalid token" do
-    it "appears as if no token is shown" do
-      expect(described_class.current).to be_nil
-      expect(described_class).not_to be_active
+  describe ".active_tokens" do
+    context "with no tokens" do
+      it "returns an empty array" do
+        expect(described_class.active_tokens).to be_empty
+      end
+    end
+
+    context "with an active token" do
+      let!(:active_token) { create_enterprise_token("an_active_token", expires_at: 1.year.from_now) }
+
+      it "returns the active token" do
+        expect(described_class.active_tokens).to eq([active_token])
+      end
+    end
+
+    context "with expired and invalid tokens" do
+      let!(:expired_token) { create_enterprise_token("an_expired_token", expires_at: Date.yesterday) }
+      let!(:invalid_token) { create_enterprise_token("an_invalid_token_with_wrong_domain", domain: "wrong.domain") }
+
+      it "returns an empty array" do
+        expect(described_class.active_tokens).to be_empty
+      end
     end
   end
 
-  describe "Configuration file has `ee_hide_banners` set to false" do
-    it "does not show banners promoting EE" do
-      allow(OpenProject::Configuration).to receive(:ee_hide_banners?).and_return(false)
+  context "when Configuration file has `ee_hide_banners` set to false",
+          with_config: { ee_hide_banners: false } do
+    it "shows banners promoting Enterprise plans" do
       expect(described_class).not_to be_hide_banners
     end
   end

@@ -560,7 +560,7 @@ Redmine::MenuManager.map :admin_menu do |menu|
             icon: "meter"
 
   menu.push :enterprise,
-            { controller: "/enterprises", action: :show },
+            { controller: "/enterprise_tokens", action: :index },
             caption: :label_enterprise_edition,
             icon: "op-enterprise-addons",
             if: proc { User.current.admin? && OpenProject::Configuration.ee_manager_visible? }

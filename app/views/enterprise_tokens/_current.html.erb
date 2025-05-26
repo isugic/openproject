@@ -13,7 +13,7 @@
 </opce-enterprise-active-saved-trial>
 
 <%= form_tag(
-      enterprise_path,
+      enterprise_token_path(@current_token),
       method: :delete,
       data: augmented_confirmation_dialog(
         danger_zone: true,

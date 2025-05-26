@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #-- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
@@ -26,22 +28,39 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-module SecurityBadgeHelper
-  def security_badge_url(args = {})
-    uri = URI.parse(OpenProject::Configuration[:security_badge_url])
-    info = {
-      uuid: Setting.installation_uuid,
-      type: OpenProject::Configuration[:installation_type],
-      version: OpenProject::VERSION.to_semver,
-      db: ActiveRecord::Base.connection.adapter_name.downcase,
-      lang: User.current.try(:language),
-      ee: EnterpriseToken.active?
-    }.merge(args.symbolize_keys)
-    uri.query = info.to_query
-    uri.to_s
-  end
+module Admin::EnterpriseTokens
+  class DeleteDialogComponent < ApplicationComponent
+    include ApplicationHelper
+    include OpTurbo::Streamable
 
-  def display_security_badge_graphic?
-    OpenProject::Configuration.security_badge_displayed? && Setting.security_badge_displayed?
+    def initialize(token)
+      super
+
+      @token = token
+    end
+
+    private
+
+    def id = "delete-enterprise-token-dialog"
+
+    def title
+      I18n.t("admin.enterprise.delete_dialog.title")
+    end
+
+    def heading
+      I18n.t("admin.enterprise.delete_dialog.heading")
+    end
+
+    def confirmation_message
+      I18n.t("admin.enterprise.delete_dialog.confirmation")
+    end
+
+    def confirm_button_text
+      I18n.t("button_delete")
+    end
+
+    def cancel_button_text
+      I18n.t("button_cancel")
+    end
   end
 end

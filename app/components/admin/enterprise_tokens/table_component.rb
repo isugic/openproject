@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #-- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
@@ -26,22 +28,41 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-module SecurityBadgeHelper
-  def security_badge_url(args = {})
-    uri = URI.parse(OpenProject::Configuration[:security_badge_url])
-    info = {
-      uuid: Setting.installation_uuid,
-      type: OpenProject::Configuration[:installation_type],
-      version: OpenProject::VERSION.to_semver,
-      db: ActiveRecord::Base.connection.adapter_name.downcase,
-      lang: User.current.try(:language),
-      ee: EnterpriseToken.active?
-    }.merge(args.symbolize_keys)
-    uri.query = info.to_query
-    uri.to_s
-  end
+module Admin::EnterpriseTokens
+  class TableComponent < ::OpPrimer::BorderBoxTableComponent
+    columns :plan, :subscriber, :active_users, :email, :domain, :dates
 
-  def display_security_badge_graphic?
-    OpenProject::Configuration.security_badge_displayed? && Setting.security_badge_displayed?
+    mobile_columns :plan, :subscriber, :active_users, :dates
+
+    mobile_labels :project_name
+
+    main_column :plan
+
+    def sortable?
+      false
+    end
+
+    def paginated?
+      false
+    end
+
+    def has_actions?
+      true
+    end
+
+    def mobile_title
+      EnterpriseToken.model_name.plural
+    end
+
+    def headers
+      @headers ||= [
+        [:plan, { caption: EnterpriseToken.human_attribute_name(:plan) }],
+        [:subscriber, { caption: EnterpriseToken.human_attribute_name(:subscriber) }],
+        [:active_users, { caption: EnterpriseToken.human_attribute_name(:active_user_count_restriction) }],
+        [:email, { caption: EnterpriseToken.human_attribute_name(:email) }],
+        [:domain, { caption: EnterpriseToken.human_attribute_name(:domain) }],
+        [:dates, { caption: I18n.t(:label_dates) }],
+      ].compact
+    end
   end
 end

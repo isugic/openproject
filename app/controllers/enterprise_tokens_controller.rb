@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #-- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
@@ -25,27 +27,35 @@
 #
 # See COPYRIGHT and LICENSE files for more details.
 #++
-class EnterprisesController < ApplicationController
+class EnterpriseTokensController < ApplicationController
+  include OpTurbo::DialogStreamHelper
+  include OpTurbo::ComponentStream
+
   layout "admin"
   menu_item :enterprise
 
   before_action :require_admin
-  before_action :check_user_limit, only: [:show]
-  before_action :check_domain, only: [:show]
+  before_action :check_user_limit, only: [:index]
+  before_action :find_token, only: %i[destroy destroy_dialog]
 
-  def show
-    @current_token = EnterpriseToken.current
-    @token = @current_token || EnterpriseToken.new
+  def index
+    # TODO: delete next line. @current_token is used in the old angular thingy.
+    # It should not be needed anymore then.
+    @current_token = EnterpriseToken.active_tokens.first
+  end
+
+  def new
+    respond_with_dialog Admin::EnterpriseTokens::CreateDialogComponent.new(EnterpriseToken.new)
   end
 
   def create # rubocop:disable Metrics/AbcSize
-    @token = EnterpriseToken.current || EnterpriseToken.new
+    @token = EnterpriseToken.new
     saved_encoded_token = @token.encoded_token
     @token.encoded_token = params[:enterprise_token][:encoded_token]
     if @token.save
       flash[:notice] = t(:notice_successful_update)
       respond_to do |format|
-        format.html { redirect_to action: :show }
+        format.html { redirect_to action: :index, status: :see_other }
         format.json { head :no_content }
       end
     else
@@ -55,24 +65,30 @@ class EnterprisesController < ApplicationController
         @current_token = @token || EnterpriseToken.new
       end
       respond_to do |format|
-        format.html { render action: :show, status: :unprocessable_entity }
+        format.html { render action: :index, status: :unprocessable_entity }
         format.json { render json: { description: @token.errors.full_messages.join(", ") }, status: :bad_request }
+        format.turbo_stream do
+          component = Admin::EnterpriseTokens::FormComponent.new(@token)
+          update_via_turbo_stream(component: component)
+          render turbo_stream: turbo_streams, status: :unprocessable_entity
+        end
       end
     end
   end
 
+  def destroy_dialog
+    respond_with_dialog Admin::EnterpriseTokens::DeleteDialogComponent.new(@token)
+  end
+
   def destroy
-    token = EnterpriseToken.current
-    if token
-      token.destroy
+    if @token.destroy
       flash[:notice] = t(:notice_successful_delete)
-
-      delete_trial_key
-
-      redirect_to action: :show
     else
-      render_404
+      flash[:error] = t(:error_failed_to_delete_entry)
     end
+
+    delete_trial_key
+    redirect_to action: :index
   end
 
   def save_trial_key
@@ -85,22 +101,16 @@ class EnterprisesController < ApplicationController
 
   private
 
+  def find_token
+    EnterpriseToken.find(params[:id])
+  end
+
   def check_user_limit
     if OpenProject::Enterprise.user_limit_reached?
       flash.now[:warning] = I18n.t(
         "warning_user_limit_reached_instructions",
         current: OpenProject::Enterprise.active_user_count,
         max: OpenProject::Enterprise.user_limit
-      )
-    end
-  end
-
-  def check_domain
-    if OpenProject::Enterprise.token.try(:invalid_domain?)
-      flash.now[:error] = I18n.t(
-        "error_enterprise_token_invalid_domain",
-        expected: Setting.host_name,
-        actual: OpenProject::Enterprise.token.domain
       )
     end
   end

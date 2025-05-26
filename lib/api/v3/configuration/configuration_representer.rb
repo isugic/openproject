@@ -100,7 +100,7 @@ module API
 
         property :available_features,
                  getter: ->(*) {
-                   EnterpriseToken.current&.available_features || []
+                   EnterpriseToken.available_features || []
                  }
 
         property :allowed_link_protocols,
