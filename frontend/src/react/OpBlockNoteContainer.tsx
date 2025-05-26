@@ -30,15 +30,22 @@
 
 import { BlockNoteView } from "@blocknote/mantine";
 import { useCreateBlockNote } from "@blocknote/react";
+import { useState } from "react";
 
-interface OpBlockNoteContainerProps {
-  myParam: string;
-}
-
-export default function OpBlockNoteContainer({ myParam }: OpBlockNoteContainerProps) {
+export default function OpBlockNoteContainer() {
   const editor = useCreateBlockNote()
+  const [editorContent, setEditorContent] = useState("");
 
-  console.log('OpBlockNoteContainer', myParam)
-
-  return <BlockNoteView editor={editor} />
+  return (
+    <>
+      <input type="hidden" name="journal[notes]" value={editorContent} />
+      <BlockNoteView
+        editor={editor}
+        onChange={async (editor) => {
+          const content = await editor.blocksToMarkdownLossy();
+          setEditorContent(content);
+        }}
+      />
+    </>
+  );
 }

@@ -766,13 +766,13 @@ export default class IndexController extends Controller {
   }
 
   private prepareFormData():FormData {
-    const ckEditorInstance = this.getCkEditorInstance();
-    const data = ckEditorInstance ? ckEditorInstance.getData({ trim: false }) : '';
+    // const ckEditorInstance = this.getCkEditorInstance();
+    // const data = ckEditorInstance ? ckEditorInstance.getData({ trim: false }) : '';
 
     const formData = new FormData(this.formTarget);
     formData.append('last_update_timestamp', this.lastServerTimestampValue);
     formData.append('filter', this.filterValue);
-    formData.append('journal[notes]', data);
+    // formData.append('journal[notes]', data);
 
     return formData;
   }

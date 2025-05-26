@@ -28,28 +28,23 @@
  * ++
  */
 
-import { Controller } from "@hotwired/stimulus"
-import { createRoot } from "react-dom/client"
-import OpBlockNoteContainer from "react/OpBlockNoteContainer"
+import { Controller } from "@hotwired/stimulus";
+import { createRoot } from "react-dom/client";
+import OpBlockNoteContainer from "react/OpBlockNoteContainer";
 
 export default class extends Controller {
-  static targets = ["root"]
+  static targets = ["root"];
 
-  declare readonly rootTarget: HTMLElement
+  declare readonly rootTarget: HTMLElement;
 
   connect() {
-    const root = createRoot(this.rootTarget)
-    root.render(this.BlockNoteReactContainer())
+    const root = createRoot(this.rootTarget);
+    root.render(this.BlockNoteReactContainer());
   }
 
-  disconnect() {
-  }
+  disconnect() { }
 
   BlockNoteReactContainer() {
-    return (
-      <OpBlockNoteContainer
-        myParam="Hello, world!"
-      />
-    )
+    return <OpBlockNoteContainer />
   }
 }
