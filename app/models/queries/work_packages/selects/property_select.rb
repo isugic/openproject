@@ -51,21 +51,6 @@ class Queries::WorkPackages::Selects::PropertySelect < Queries::WorkPackages::Se
       sortable: "position",
       groupable: "#{WorkPackage.table_name}.type_id"
     },
-    project_phase: {
-      association: "project_phase_definition",
-      group_by_column_name: "project_phase_definition",
-      sortable: "#{Project::PhaseDefinition.table_name}.position",
-      groupable: "#{Project::PhaseDefinition.table_name}.id",
-      only_if: ->(project) do
-        if project
-          OpenProject::FeatureDecisions.stages_and_gates_active? &&
-            User.current.allowed_in_project?(:view_project_phases, project)
-        else
-          OpenProject::FeatureDecisions.stages_and_gates_active? &&
-            User.current.allowed_in_any_project?(:view_project_phases)
-        end
-      end
-    },
     parent: {
       association: "ancestors_relations",
       sortable: false
@@ -159,13 +144,9 @@ class Queries::WorkPackages::Selects::PropertySelect < Queries::WorkPackages::Se
     }
   }
 
-  def self.instances(context = nil)
+  def self.instances(_context = nil)
     property_selects.filter_map do |name, options|
-      condition = options[:only_if]
-
-      if !condition || condition.call(context)
-        new(name, options.except(:only_if))
-      end
+      new(name, options)
     end
   end
 end
