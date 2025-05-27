@@ -62,7 +62,7 @@ module BaseServices
         service_call = validate_contract(service_call) if service_call.success?
         service_call = after_validate(params, service_call) if service_call.success?
         service_call = persist(service_call) if service_call.success?
-        service_call = after_perform(service_call) if service_call.success?
+        service_call = after_perform(params, service_call) if service_call.success?
 
         service_call
       end
@@ -96,7 +96,7 @@ module BaseServices
       call
     end
 
-    def after_perform(call)
+    def after_perform(_params, call)
       # nothing for now but subclasses can override
       call
     end

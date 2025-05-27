@@ -32,7 +32,7 @@
 module Storages
   module FileLinks
     class DeleteService < ::BaseServices::Delete
-      def after_perform(service_result)
+      def after_perform(_params, service_result)
         container = service_result.result.container
 
         # No need to continue if container isn't journaled.

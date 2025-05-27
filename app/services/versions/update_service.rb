@@ -30,7 +30,7 @@ module Versions
   class UpdateService < ::BaseServices::Update
     private
 
-    def after_perform(service_call)
+    def after_perform(_params, service_call)
       model.touch if only_custom_values_updated?
       update_wps_from_sharing_change if model.saved_change_to_sharing?
       service_call

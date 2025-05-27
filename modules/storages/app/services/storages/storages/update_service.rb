@@ -33,7 +33,7 @@ module Storages::Storages
   class UpdateService < ::BaseServices::Update
     protected
 
-    def after_perform(service_call)
+    def after_perform(_params, service_call)
       super
 
       storage = service_call.result

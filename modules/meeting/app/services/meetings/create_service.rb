@@ -32,7 +32,7 @@ module Meetings
   class CreateService < ::BaseServices::Create
     protected
 
-    def after_perform(call)
+    def after_perform(_params, call)
       if call.success? && Journal::NotificationConfiguration.active?
         meeting = call.result
 

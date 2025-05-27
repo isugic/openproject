@@ -47,7 +47,7 @@ class WorkPackages::UpdateService < BaseServices::Update
     end
   end
 
-  def after_perform(service_call)
+  def after_perform(_params, service_call)
     set_templated_attributes
     update_related_work_packages(service_call)
     cleanup(service_call.result)

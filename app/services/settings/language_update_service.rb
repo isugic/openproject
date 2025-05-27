@@ -30,7 +30,7 @@
 #
 
 class Settings::LanguageUpdateService < Settings::UpdateService
-  def after_perform(call)
+  def after_perform(_params, call)
     force_users_to_use_only_available_languages
 
     call

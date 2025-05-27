@@ -51,7 +51,7 @@ module CustomFields
       cf
     end
 
-    def after_perform(call)
+    def after_perform(_params, call)
       cf = call.result
 
       if cf.is_a?(ProjectCustomField)

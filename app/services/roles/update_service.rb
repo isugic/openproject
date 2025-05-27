@@ -34,7 +34,7 @@ class Roles::UpdateService < BaseServices::Update
     super
   end
 
-  def after_perform(call)
+  def after_perform(_params, call)
     permissions_new = call.result.permissions
     permissions_diff = (@permissions_old - permissions_new) | (permissions_new - @permissions_old)
     OpenProject::Notifications.send(

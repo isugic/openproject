@@ -49,7 +49,7 @@ module Groups
       call
     end
 
-    def after_perform(call)
+    def after_perform(_params, call)
       Groups::CreateInheritedRolesService
         .new(model, current_user: user, contract_class:)
         .call(

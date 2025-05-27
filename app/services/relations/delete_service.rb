@@ -29,7 +29,7 @@
 class Relations::DeleteService < BaseServices::Delete
   include Relations::Concerns::Rescheduling
 
-  def after_perform(_result)
+  def after_perform(_params, _call)
     result = super
     if result.success? && deleted_relation.follows?
       reschedule_result = reschedule_successor(deleted_relation)

@@ -43,7 +43,7 @@ module Storages::Storages
 
     protected
 
-    def after_perform(service_call)
+    def after_perform(_params, service_call)
       super
       return service_call unless create_oauth_app?
 

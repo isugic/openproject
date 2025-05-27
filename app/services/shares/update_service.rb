@@ -31,7 +31,7 @@ class Shares::UpdateService < BaseServices::Update
 
   protected
 
-  def after_perform(service_call)
+  def after_perform(_params, service_call)
     return service_call unless service_call.success?
 
     share = service_call.result

@@ -37,7 +37,7 @@ module Bim
         super
       end
 
-      def after_perform(service_result)
+      def after_perform(_params, service_result)
         if service_result.success?
           # As the attachments association does not have the autosave option, we need to remove the
           # attachments ourselves

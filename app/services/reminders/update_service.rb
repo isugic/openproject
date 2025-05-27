@@ -30,7 +30,7 @@ module Reminders
   class UpdateService < ::BaseServices::Update
     include Reminders::ServiceHelpers
 
-    def after_perform(service_call)
+    def after_perform(_params, service_call)
       reschedule_reminder(service_call.result) if remind_at_changed?
 
       service_call

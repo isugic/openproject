@@ -33,11 +33,11 @@ module MeetingAgendaItems
 
     alias_method :original_after_perform, :after_perform
 
-    def after_perform(call)
+    def after_perform(_params, call)
       # The reload is required because, the time slot calculations are changing the
       # `start_time`, `end_time` attributes and they should be available for rendering.
       call.result.reload
-      original_after_perform(call)
+      original_after_perform(_params, call)
     end
   end
 end

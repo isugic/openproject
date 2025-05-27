@@ -38,7 +38,7 @@ module Backups
       @include_attachments
     end
 
-    def after_perform(call)
+    def after_perform(_params, call)
       if call.success?
         BackupJob.perform_later(
           backup: call.result,

@@ -30,7 +30,7 @@ module Projects::Concerns
   module UpdateDemoData
     private
 
-    def after_perform(call)
+    def after_perform(_params, call)
       project = call.result
 
       # e.g. when one of the demo projects gets deleted or archived

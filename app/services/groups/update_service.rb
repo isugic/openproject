@@ -43,7 +43,7 @@ class Groups::UpdateService < BaseServices::Update
     call
   end
 
-  def after_perform(call)
+  def after_perform(_params, call)
     new_user_ids = call.result.group_users.select(&:saved_changes?).map(&:user_id)
 
     if new_user_ids.any?

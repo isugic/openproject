@@ -31,7 +31,7 @@ module Bim
     class CreateService < ::BaseServices::Create
       protected
 
-      def after_perform(call)
+      def after_perform(_params, call)
         if call.success?
           IfcConversionJob.perform_later(call.result)
         end

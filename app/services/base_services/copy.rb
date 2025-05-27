@@ -83,7 +83,7 @@ module BaseServices
       end
     end
 
-    def after_perform(call)
+    def after_perform(_params, call)
       return call if params[:attributes_only]
 
       super

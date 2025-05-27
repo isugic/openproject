@@ -32,7 +32,7 @@ module MeetingAgendaItems
     extend ActiveSupport::Concern
 
     included do
-      def after_perform(call)
+      def after_perform(_params, call)
         meeting_agenda_item = call.result
         meeting = meeting_agenda_item.meeting
 

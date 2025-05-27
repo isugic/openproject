@@ -42,7 +42,7 @@ module Projects::Concerns
       end
     end
 
-    def after_perform(attributes_call)
+    def after_perform(params, attributes_call)
       new_project = attributes_call.result
 
       set_default_role(new_project) unless user.admin?

@@ -44,7 +44,7 @@ module Projects
       ret
     end
 
-    def after_perform(service_call)
+    def after_perform(_params, service_call)
       ret = super
       reset_section_scoped_validation
       touch_on_custom_values_update

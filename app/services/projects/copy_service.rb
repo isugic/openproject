@@ -92,7 +92,7 @@ module Projects
       end
     end
 
-    def after_perform(call)
+    def after_perform(_params, call)
       super.tap do |super_call|
         copy_activated_custom_fields(super_call)
       end

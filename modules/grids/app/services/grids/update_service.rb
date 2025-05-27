@@ -35,7 +35,7 @@ class Grids::UpdateService < BaseServices::Update
     super
   end
 
-  def after_perform(service_call)
+  def after_perform(_params, service_call)
     model.touch if only_widgets_updated?
 
     super

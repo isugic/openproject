@@ -30,7 +30,7 @@ module Reminders
   class CreateService < ::BaseServices::Create
     include Reminders::ServiceHelpers
 
-    def after_perform(service_call)
+    def after_perform(_params, service_call)
       schedule_new_reminder_job(service_call.result)
 
       service_call

@@ -56,7 +56,7 @@ class Settings::WorkingDaysAndHoursUpdateService < Settings::UpdateService
     results
   end
 
-  def after_perform(call)
+  def after_perform(_params, call)
     super.tap do
       WorkPackages::ApplyWorkingDaysChangeJob.perform_later(
         user_id: User.current.id,

@@ -34,7 +34,7 @@ module RecurringMeetings
 
     protected
 
-    def after_perform(call)
+    def after_perform(_params, call)
       return call unless call.success?
 
       recurring_meeting = call.result

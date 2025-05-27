@@ -52,7 +52,7 @@ module Attachments
       end
     end
 
-    def after_perform(call)
+    def after_perform(_params, call)
       attachment = call.result
       container = attachment.container
 

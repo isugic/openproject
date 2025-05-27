@@ -46,7 +46,7 @@ module Projects
       service_call
     end
 
-    def after_perform(service_call)
+    def after_perform(_params, service_call)
       OpenProject::Notifications.send(OpenProject::Events::PROJECT_ARCHIVED, project: model)
       service_call
     end

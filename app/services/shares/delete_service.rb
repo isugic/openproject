@@ -39,7 +39,7 @@ class Shares::DeleteService < BaseServices::Delete
 
   protected
 
-  def after_perform(service_call)
+  def after_perform(_params, service_call)
     super.tap do |call|
       share = call.result
 

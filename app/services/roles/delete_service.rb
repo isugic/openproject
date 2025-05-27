@@ -35,7 +35,7 @@ class Roles::DeleteService < BaseServices::Delete
 
   protected
 
-  def after_perform(service_call)
+  def after_perform(_params, service_call)
     super.tap do |_call|
       ::OpenProject::Notifications.send(
         ::OpenProject::Events::ROLE_DESTROYED,

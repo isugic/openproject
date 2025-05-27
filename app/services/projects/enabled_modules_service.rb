@@ -48,7 +48,7 @@ module Projects
       call
     end
 
-    def after_perform(call)
+    def after_perform(_params, call)
       super.tap do
         # Ensure the project is touched to update its cache key
         model.touch

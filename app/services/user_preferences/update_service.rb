@@ -46,7 +46,7 @@ module UserPreferences
       super
     end
 
-    def after_perform(service_call)
+    def after_perform(_params, service_call)
       return service_call if notifications.nil?
 
       inserted = persist_notifications

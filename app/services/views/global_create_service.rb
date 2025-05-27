@@ -35,7 +35,7 @@ class Views::GlobalCreateService < BaseServices::Create
     super
   end
 
-  def after_perform(call)
+  def after_perform(_params, call)
     create_view_from_query(call)
   end
 
