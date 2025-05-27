@@ -146,6 +146,17 @@ RSpec.describe "Project phase field in the work package table", :js do
         wp_table.expect_work_package_with_attributes(other_wp, { projectPhase: "-" })
         wp_table.expect_work_package_with_attributes(wp_without_phase, { projectPhase: "-" })
       end
+
+      context "when grouping" do
+        let(:group_by) { :project_phase }
+
+        it "treats work packages with an inactive project phase like work packages without a project phase" do
+          wp_table.expect_groups({
+                                   project_phase.name => 1,
+                                   "-" => 2
+                                 })
+        end
+      end
     end
 
     context "without the necessary permissions" do
