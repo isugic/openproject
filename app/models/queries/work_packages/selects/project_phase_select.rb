@@ -33,7 +33,7 @@ class Queries::WorkPackages::Selects::ProjectPhaseSelect < Queries::WorkPackages
     super(:project_phase,
           association: "project_phase_definition",
           group_by_column_name: "project_phase_definition",
-          sortable: "pd.position",
+          sortable: sortable_statement,
           groupable: group_by_statement,
           groupable_join: group_by_join_statement,
           groupable_select: groupable_select
@@ -60,6 +60,8 @@ class Queries::WorkPackages::Selects::ProjectPhaseSelect < Queries::WorkPackages
     )
   end
 
+  # Is called when the query is grouped by project phase definition.
+  # We ensure that only active project phases are considered.
   def group_by_join_statement
     <<~SQL.squish
       LEFT OUTER JOIN (
@@ -72,6 +74,18 @@ class Queries::WorkPackages::Selects::ProjectPhaseSelect < Queries::WorkPackages
       ) pd
       ON project_phase_definition_id = pd.id
     SQL
+  end
+
+  def sortable_join_statement(_query)
+    # Replicate the group by join to ensure the same conditions are applied (and the same alias for the join is used)
+    group_by_join_statement
+  end
+
+  def sortable_statement
+    # We use the join alias from the group by join statement to ensure that work packages with an *inactive* project
+    # phase are treated like work packages *without* a project phase. In the result list, they will belong to the
+    # same group: without an active project phase.
+    "pd.position"
   end
 
   def self.instances(context = nil)
