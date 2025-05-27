@@ -29,4 +29,31 @@
 #++
 
 class ScimClients::CreateService < BaseServices::Create
+  def after_perform(service_call) # TODO: we'd need params...
+    super
+
+    # TODO: add those to the dependent service results?
+    update_service_account(params)
+    update_oauth_application(params)
+  end
+
+  private
+
+  def update_service_account(params)
+    service_account.name = params[:name]
+    if params[:authentication_method] == ::ScimClients::FormModel::AUTHENTICATION_SSO
+      auth_provider = AuthProvider.find(params[:auth_provider_id])
+      service_account.identity_url = "#{auth_provider.slug}:#{params[:jwt_sub]}"
+    else
+      service_account.identity_url = nil
+    end
+  end
+
+  def update_oauth_application(params)
+    # TODO
+  end
+
+  def service_account
+    model.build_service_account(admin: true)
+  end
 end

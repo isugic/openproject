@@ -29,18 +29,4 @@
 #++
 
 class ScimClients::UpdateService < BaseServices::Update
-  def after_perform(call)
-    return call if call.failure?
-
-    client = call.result
-    # TODO: this makes update service spec fail, because it's unexpected that set attributes service does more than attribute setting...
-    client.service_account&.save! # TODO: return failure instead of raising
-
-    # FIXME: we have no params in after_perform, so we can't use the params[:authentication_method] to decide here
-    if client.service_account.identity_url.present?
-      client.oauth_application.destroy
-    end
-
-    call
-  end
 end

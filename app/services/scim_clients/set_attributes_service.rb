@@ -30,26 +30,5 @@
 
 module ScimClients
   class SetAttributesService < BaseServices::SetAttributes
-    def set_attributes(params)
-      super(params.slice(:name, :auth_provider_id))
-
-      update_service_account(params)
-    end
-
-    private
-
-    def update_service_account(params)
-      service_account.name = params[:name]
-      if params[:authentication_method] == ::ScimClients::FormModel::AUTHENTICATION_SSO
-        auth_provider = AuthProvider.find(params[:auth_provider_id])
-        service_account.identity_url = "#{auth_provider.slug}:#{params[:jwt_sub]}"
-      else
-        service_account.identity_url = nil
-      end
-    end
-
-    def service_account
-      model.service_account || model.build_service_account
-    end
   end
 end
