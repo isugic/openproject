@@ -1,7 +1,11 @@
 module LdapGroups
   class SynchronizedFiltersController < ::ApplicationController
     before_action :require_admin
-    before_action :check_ee
+
+    guard_enterprise_feature(:ldap_groups, except: %i[show destroy]) do
+      redirect_to ldap_groups_synchronized_groups_path, status: :see_other
+    end
+
     before_action :find_filter, except: %i[new create]
 
     layout "admin"
@@ -73,13 +77,6 @@ module LdapGroups
 
     def find_filter
       @filter = SynchronizedFilter.find(params[:ldap_filter_id])
-    end
-
-    def check_ee
-      unless EnterpriseToken.allows_to?(:ldap_groups)
-        render template: "ldap_groups/synchronized_groups/upsell"
-        false
-      end
     end
 
     def permitted_params

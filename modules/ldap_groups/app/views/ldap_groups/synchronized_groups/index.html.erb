@@ -17,6 +17,7 @@
                                  label: I18n.t(:button_add),
                                  anchor_align: :end,
                                  button_arguments: { scheme: :primary,
+                                                     disabled: !EnterpriseToken.allows_to?(:ldap_groups),
                                                      aria: { label: I18n.t(:button_add) },
                                                      test_selector: "op-admin-synchronized-groups--button-new" }) do |menu|
         menu.with_item(
@@ -32,6 +33,11 @@
         )
       end
     end %>
+
+<%= render EnterpriseEdition::BannerComponent.new(
+  :ldap_groups,
+  variant: :inline
+  ) %>
 
 <div class="op-toast -info">
   <div class="op-toast--content">
