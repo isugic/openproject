@@ -102,12 +102,11 @@ module Projects::LifeCycles
     end
 
     def show_clear_button?(field_name)
-      value_is_present = value(field_name).present?
       case field_name
       when :start_date
-        value_is_present && !start_date_disabled?
+        !start_date_disabled?
       when :finish_date
-        value_is_present
+        true
       end
     end
 
