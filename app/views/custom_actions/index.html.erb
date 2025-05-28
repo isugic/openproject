@@ -14,16 +14,17 @@
 
 <%=
   render(Primer::OpenProject::SubHeader.new) do |subheader|
-    subheader.with_action_button(
-      scheme: :primary,
-      leading_icon: :plus,
-      label: t("custom_actions.new"),
-      test_selector: "op-admin-custom-actions--button-new",
-      tag: :a,
-      disabled: !available,
-      href: new_custom_action_path
-    ) do
-      CustomAction.model_name.human
+    if available
+      subheader.with_action_button(
+        scheme: :primary,
+        leading_icon: :plus,
+        label: t("custom_actions.new"),
+        test_selector: "op-admin-custom-actions--button-new",
+        tag: :a,
+        href: new_custom_action_path
+      ) do
+        CustomAction.model_name.human
+      end
     end
   end
 %>
@@ -36,4 +37,6 @@
   )
 %>
 
-<%= render(::CustomActions::TableComponent.new(rows: @custom_actions)) %>
+<% if available %>
+  <%= render(::CustomActions::TableComponent.new(rows: @custom_actions)) %>
+<% end %>

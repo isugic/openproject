@@ -28,7 +28,10 @@
 
 class CustomActionsController < ApplicationController
   before_action :require_admin
-  before_action :require_enterprise_token, except: %i[index]
+
+  guard_enterprise_feature(:custom_actions, only: %i[new create edit update]) do
+    redirect_to action: :index
+  end
 
   self._model_object = CustomAction
   before_action :find_model_object, only: %i(edit update destroy)
@@ -79,12 +82,6 @@ class CustomActionsController < ApplicationController
         render action: render_action, status: :unprocessable_entity
       end
     }
-  end
-
-  def require_enterprise_token
-    return if EnterpriseToken.allows_to?(:custom_actions)
-
-    render_403
   end
 
   # If no action/condition is set in the view, the
