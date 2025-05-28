@@ -139,6 +139,7 @@ class Project < ApplicationRecord
                 datetime: :created_at
 
   register_journal_formatted_fields "active", formatter_key: :active_status
+  register_journal_formatted_fields "cause", formatter_key: :cause
   register_journal_formatted_fields "templated", formatter_key: :template
   register_journal_formatted_fields "identifier", "name", formatter_key: :plaintext
   register_journal_formatted_fields "status_explanation", "description", formatter_key: :diff

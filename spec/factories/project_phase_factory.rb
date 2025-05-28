@@ -36,7 +36,12 @@ FactoryBot.define do
 
     start_date { Date.current - 2.days }
     finish_date { Date.current + 2.days }
-    duration { date_range_set? ? finish_date - start_date + 1 : nil }
+    duration do
+      next 0 unless date_range_set?
+
+      working_days = Setting.find_by(name: :working_days).value.map(&:to_i)
+      (start_date..finish_date).count { |d| working_days.include?(d.cwday) }
+    end
 
     trait :skip_validate do
       to_create { |instance| instance.save(validate: false) }
