@@ -57,29 +57,28 @@ module Project::Phases::Scopes::CoveringDatesAndDaysOfWeek
             WHERE
               start_date IS NOT NULL
               OR finish_date IS NOT NULL
-          ),
-
-          -- generate a row for every date between start_date and finish_date
-          covered_dates AS (
-            SELECT
-              id,
-              generate_series(start_date, finish_date, '1 day') AS date
-            FROM phases_with_dates
-          ),
-
-          -- add day of the week column
-          covered_dates_and_wday AS (
-            SELECT
-              id,
-              date,
-              EXTRACT(isodow FROM date) AS dow
-            FROM covered_dates
           )
 
-        -- select id of phases covering the given days
-        SELECT id
-        FROM covered_dates_and_wday
-        WHERE dow IN (:days_of_week) OR date IN (:dates)
+        SELECT
+          id
+        FROM
+          phases_with_dates
+        WHERE
+          -- Check if the first day of the week after the start date is smaller than or equal to the finish date
+          EXISTS (
+            SELECT 1
+            FROM unnest(Array[:days_of_week]::INT4[]) AS target_dow
+            WHERE (
+              MOD((target_dow + 7 - EXTRACT(isodow FROM start_date)) % 7, 7) <= (finish_date - start_date)
+            )
+          )
+          OR
+          -- Check if the range covers any of the provided dates
+          EXISTS (
+            SELECT 1
+            FROM unnest(Array[:dates]::DATE[]) AS target_date
+            WHERE target_date BETWEEN start_date AND finish_date
+          )
       SQL
 
       where("id IN (#{ids_sql})")
