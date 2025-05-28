@@ -40,11 +40,11 @@ class CustomStylesController < ApplicationController
 
   before_action :require_admin,
                 except: UNGUARDED_ACTIONS
-  before_action :require_ee_token,
-                except: UNGUARDED_ACTIONS + %i[upsell]
   skip_before_action :check_if_login_required,
                      only: UNGUARDED_ACTIONS
   no_authorization_required! *UNGUARDED_ACTIONS
+
+  guard_enterprise_feature(:define_custom_style, except: UNGUARDED_ACTIONS + %i[show])
 
   def default_url_options
     super.merge(tab: params[:tab])
@@ -178,12 +178,6 @@ class CustomStylesController < ApplicationController
 
   def get_or_create_custom_style
     CustomStyle.current || CustomStyle.create!
-  end
-
-  def require_ee_token
-    unless EnterpriseToken.allows_to?(:define_custom_style)
-      redirect_to custom_style_upsell_path
-    end
   end
 
   def custom_style_params

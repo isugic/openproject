@@ -53,8 +53,8 @@ RSpec.describe CustomStylesController do
           allow(EnterpriseToken).to receive(:current).and_return(nil)
         end
 
-        it "redirects to #upsell" do
-          expect(subject).to redirect_to action: :upsell
+        it "renders show" do
+          expect(subject).to redirect_to action: :show, tab: "interface"
         end
       end
     end
@@ -92,6 +92,24 @@ RSpec.describe CustomStylesController do
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response).to render_template "custom_styles/show"
         end
+      end
+    end
+
+    describe "#create", with_ee: false do
+      let(:custom_style) { CustomStyle.new }
+      let(:params) do
+        {
+          custom_style: { logo: "foo", favicon: "bar", icon_touch: "yay" }
+        }
+      end
+
+      before do
+        post :create, params:
+      end
+
+      it "renders a 403" do
+        expect(response).to have_http_status(:forbidden)
+        expect(flash[:error][:message]).to match /You need the basic enterprise plan to perform this action/
       end
     end
 

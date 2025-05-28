@@ -27,25 +27,35 @@ See COPYRIGHT and LICENSE files for more details.
 
 ++#%>
 
-<%= render(Admin::DesignHeaderComponent.new(tabs: design_tabs)) %>
+<% allowed = EnterpriseToken.allows_to?(:define_custom_style) %>
+<% tabs = allowed ? design_tabs : [] %>
+<%= render(Admin::DesignHeaderComponent.new(tabs:)) %>
 
-<%= error_messages_for "custom_style" %>
-<%= form_tag update_design_themes_path, method: :post, class: "form" do %>
-  <section class="form--section">
-    <fieldset class="form--fieldset">
-      <legend class="form--fieldset-legend"><%= I18n.t("admin.custom_styles.color_theme") %></legend>
-      <div class="form--field">
-        <div class="form--field-container">
-          <%= styled_select_tag "theme",
-                                options_for_select(@theme_options, @current_theme),
-                                container_class: "-slim" %>
+<%= render EnterpriseEdition::BannerComponent.new(
+  :define_custom_style,
+  variant: :large,
+  video: "enterprise/custom-design.mp4"
+) %>
+
+<% if allowed %>
+  <%= error_messages_for "custom_style" %>
+  <%= form_tag update_design_themes_path, method: :post, class: "form" do %>
+    <section class="form--section">
+      <fieldset class="form--fieldset">
+        <legend class="form--fieldset-legend"><%= I18n.t("admin.custom_styles.color_theme") %></legend>
+        <div class="form--field">
+          <div class="form--field-container">
+            <%= styled_select_tag "theme",
+                                  options_for_select(@theme_options, @current_theme),
+                                  container_class: "-slim" %>
+          </div>
         </div>
-      </div>
 
-      <%= styled_button_tag t(:button_save),
-                            data: { test_selector: "color-theme-button", confirm: (t("admin.custom_styles.theme_warning") if @current_theme.blank?) } %>
-    </fieldset>
-  </section>
+        <%= styled_button_tag t(:button_save),
+                              data: { test_selector: "color-theme-button", confirm: (t("admin.custom_styles.theme_warning") if @current_theme.blank?) } %>
+      </fieldset>
+    </section>
+  <% end %>
+
+  <%= render_tabs design_tabs %>
 <% end %>
-
-<%= render_tabs design_tabs %>

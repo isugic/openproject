@@ -61,6 +61,7 @@ See COPYRIGHT and LICENSE files for more details.
 
   <%= render PlaceholderUsers::TableComponent.new(rows: @placeholder_users) %>
 <% else %>
-  <%= render EnterpriseEdition::UpsellPageComponent.new(:placeholder_users,
-                                                        video: "enterprise/placeholder_users.mp4") %>
+  <%= render EnterpriseEdition::BannerComponent.new(:placeholder_users,
+                                                    variant: :large,
+                                                    video: "enterprise/placeholder_users.mp4") %>
 <% end %>

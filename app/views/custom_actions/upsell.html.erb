@@ -30,8 +30,9 @@ See COPYRIGHT and LICENSE files for more details.
 <% html_title t(:label_administration), t("ee.upsell.custom_actions.title") %>
 
 <%=
-  render EnterpriseEdition::UpsellPageComponent.new(
+  render EnterpriseEdition::BannerComponent.new(
     :custom_actions,
+    variant: :large,
     video: "enterprise/custom-actions.mp4"
   )
 %>

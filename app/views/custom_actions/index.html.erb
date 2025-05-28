@@ -1,4 +1,5 @@
 <% html_title t(:label_administration), t("custom_actions.plural") -%>
+<% available = EnterpriseToken.allows_to?(:custom_actions) %>
 
 <%=
   render Primer::OpenProject::PageHeader.new do |header|
@@ -19,11 +20,20 @@
       label: t("custom_actions.new"),
       test_selector: "op-admin-custom-actions--button-new",
       tag: :a,
+      disabled: !available,
       href: new_custom_action_path
     ) do
       CustomAction.model_name.human
     end
   end
+%>
+
+<%=
+  render EnterpriseEdition::BannerComponent.new(
+    :custom_actions,
+    variant: :large,
+    video: "enterprise/custom-actions.mp4"
+  )
 %>
 
 <%= render(::CustomActions::TableComponent.new(rows: @custom_actions)) %>

@@ -28,7 +28,7 @@
 
 class CustomActionsController < ApplicationController
   before_action :require_admin
-  before_action :require_enterprise_token
+  before_action :require_enterprise_token, except: %i[index]
 
   self._model_object = CustomAction
   before_action :find_model_object, only: %i(edit update destroy)
@@ -84,11 +84,7 @@ class CustomActionsController < ApplicationController
   def require_enterprise_token
     return if EnterpriseToken.allows_to?(:custom_actions)
 
-    if request.get?
-      render template: "custom_actions/upsell"
-    else
-      render_403
-    end
+    render_403
   end
 
   # If no action/condition is set in the view, the

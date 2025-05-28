@@ -1,6 +1,7 @@
 <% html_title t("js.notifications.title") %>
 
-<%= render EnterpriseEdition::UpsellPageComponent.new(
+<%= render EnterpriseEdition::BannerComponent.new(
   :date_alerts,
+  variant: :large,
   video: "enterprise/date-alert-notifications.mp4"
 ) %>
