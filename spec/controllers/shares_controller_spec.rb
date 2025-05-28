@@ -96,7 +96,7 @@ RSpec.describe SharesController do
 
       context "when the user does have permission" do
         before do
-          role = create(:project_query_role, permissions: %i[view_project_query])
+          role = ProjectQueryRole.find_by(builtin: Role::BUILTIN_PROJECT_QUERY_VIEW)
           create(:member, entity: project_query, principal: user, roles: [role])
           make_request
         end
