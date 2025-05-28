@@ -31,8 +31,8 @@
 class Queries::WorkPackages::Selects::ProjectPhaseSelect < Queries::WorkPackages::Selects::WorkPackageSelect
   def initialize
     super(:project_phase,
-          association: "project_phase_definition",
-          group_by_column_name: "project_phase_definition",
+          association: :project_phase_definition,
+          group_by_column_name: :project_phase_definition,
           sortable: sortable_statement,
           groupable: group_by_statement,
           groupable_join: group_by_join_statement,

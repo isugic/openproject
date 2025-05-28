@@ -1432,6 +1432,60 @@ RSpec.describe API::V3::WorkPackages::WorkPackageRepresenter do
         end
       end
 
+      describe "projectPhaseDefinition" do
+        context "with the feature flag being active", with_flag: { stages_and_gates: true } do
+          context "with a phase being set" do
+            it_behaves_like "has a titled link" do
+              let(:link) { "projectPhaseDefinition" }
+              let(:href) { "/api/v3/project_phase_definitions/#{work_package.project_phase_definition_id}" }
+              let(:title) { work_package.project_phase_definition.name }
+            end
+          end
+
+          context "without a phase being set" do
+            before do
+              work_package.project_phase_definition = nil
+            end
+
+            it_behaves_like "has a titled link" do
+              let(:link) { "projectPhaseDefinition" }
+              let(:href) { nil }
+              let(:title) { nil }
+            end
+          end
+
+          context "with the phase not existing in the project" do
+            let(:project_phases) { [other_project_phase] }
+
+            it_behaves_like "has a titled link" do
+              let(:link) { "projectPhaseDefinition" }
+              let(:href) { nil }
+              let(:title) { nil }
+            end
+          end
+
+          context "with the phase being inactive in the project" do
+            let(:project_phase) { build_stubbed(:project_phase, active: false, definition: project_phase_definition) }
+
+            it_behaves_like "has a titled link" do
+              let(:link) { "projectPhaseDefinition" }
+              let(:href) { nil }
+              let(:title) { nil }
+            end
+          end
+
+          context "without the user being allowed to see the reference" do
+            let(:permissions) { all_permissions - [:view_project_phases] }
+
+            it_behaves_like "has a titled link" do
+              let(:link) { "projectPhaseDefinition" }
+              let(:href) { nil }
+              let(:title) { nil }
+            end
+          end
+        end
+      end
+
       context "when passing timestamps" do
         let(:timestamps) { [Timestamp.new(baseline_time), Timestamp.now] }
         let(:baseline_time) { Time.zone.parse("2022-01-01") }
