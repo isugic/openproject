@@ -29,7 +29,6 @@
 #++
 
 require "spec_helper"
-require_relative "shared_upsell_examples"
 
 RSpec.describe CustomStylesController do
   before do

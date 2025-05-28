@@ -40,8 +40,7 @@ RSpec.describe "Tabs navigation and content switching on the admin/design page" 
     end
 
     it "redirects to upsell page" do
-      expect(page).to have_enterprise_upsell_page
-      expect(page).to have_text "Available starting with the Basic enterprise plan"
+      expect(page).to have_enterprise_banner(:basic)
     end
   end
 

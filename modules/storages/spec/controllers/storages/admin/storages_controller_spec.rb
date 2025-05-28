@@ -29,7 +29,6 @@
 #++
 
 require "spec_helper"
-require_relative "../../../../../../spec/controllers/shared_upsell_examples"
 
 RSpec.describe Storages::Admin::StoragesController do
   let(:user) { build(:admin) }
@@ -38,5 +37,9 @@ RSpec.describe Storages::Admin::StoragesController do
     login_as user
   end
 
-  it_behaves_like "it has an upsell action"
+  it "renders the upsell page" do
+    get :upsell
+    expect(response).to be_successful
+    expect(response).to render_template "upsell"
+  end
 end

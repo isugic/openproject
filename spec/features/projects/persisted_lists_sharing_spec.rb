@@ -86,7 +86,7 @@ RSpec.describe "Project list sharing",
       projects_index_page.open_share_dialog
 
       share_dialog.expect_open
-      share_dialog.expect_upsell_banner
+      expect(page).to have_enterprise_banner(:premium)
     end
   end
 

@@ -20,7 +20,7 @@ RSpec.describe "LDAP group sync administration spec", :js do
     let!(:auth_source) { create(:ldap_auth_source, name: "ldap") }
 
     it "allows synced group administration flow" do
-      expect(page).not_to have_enterprise_upsell_page
+      expect(page).not_to have_enterprise_banner
       # Open create menu
       page.find_test_selector("op-admin-synchronized-groups--button-new", text: I18n.t(:button_add)).click
       # Create group
