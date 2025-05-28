@@ -1,4 +1,10 @@
 <%=
+  if strategy.enterprise_feature
+    modal_content.with_row do
+      render(EnterpriseEdition::BannerComponent.new(strategy.enterprise_feature))
+    end
+  end
+
   if strategy.manageable?
     modal_content.with_row do
       render(Shares::InviteUserFormComponent.new(strategy:, errors:))

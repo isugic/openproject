@@ -70,6 +70,16 @@ module SharingStrategies
       raise NotImplementedError, "Override in a subclass and return a title for the sharing dialog"
     end
 
+    def enterprise_feature
+      nil
+    end
+
+    def feature_available?
+      return true if enterprise_feature.nil?
+
+      EnterpriseToken.allows_to?(enterprise_feature)
+    end
+
     def custom_body_components?
       !additional_body_components.empty?
     end

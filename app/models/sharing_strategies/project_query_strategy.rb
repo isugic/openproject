@@ -47,7 +47,7 @@ module SharingStrategies
     end
 
     def manageable?
-      @entity.editable?
+      @entity.editable? && feature_available?
     end
 
     def viewable?
@@ -105,12 +105,8 @@ module SharingStrategies
       end
     end
 
-    def manage_shares_component(modal_content:, errors:)
-      if EnterpriseToken.allows_to?(:project_list_sharing)
-        super
-      else
-        Shares::ProjectQueries::UpsellComponent.new(modal_content:)
-      end
+    def enterprise_feature
+      :project_list_sharing
     end
 
     def title

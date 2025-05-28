@@ -196,13 +196,13 @@ RSpec.describe SharesController do
     context "when the strategy allows viewing but enterprise check fails" do
       before do
         allow_any_instance_of(SharingStrategies::ProjectQueryStrategy).to receive_messages(viewable?: true, manageable?: false)
-        allow(Shares::ProjectQueries::UpsellComponent).to receive(:new).and_call_original
+        allow(EnterpriseEdition::BannerComponent).to receive(:new).and_call_original
       end
 
       it "renders the upsell component" do
         make_request
         expect(response).to have_http_status(:ok)
-        expect(Shares::ProjectQueries::UpsellComponent).to have_received(:new)
+        expect(EnterpriseEdition::BannerComponent).to have_received(:new)
       end
     end
 
@@ -230,13 +230,13 @@ RSpec.describe SharesController do
         allow_any_instance_of(SharingStrategies::ProjectQueryStrategy).to receive_messages(
           viewable?: false, manageable?: true
         )
-        allow(Shares::ProjectQueries::UpsellComponent).to receive(:new).and_call_original
+        allow(EnterpriseEdition::BannerComponent).to receive(:new).and_call_original
       end
 
-      it "renders the upsell component" do
+      it "renders a banner component" do
         make_request
         expect(response).to have_http_status(:ok)
-        expect(Shares::ProjectQueries::UpsellComponent).to have_received(:new)
+        expect(EnterpriseEdition::BannerComponent).to have_received(:new)
       end
     end
 
