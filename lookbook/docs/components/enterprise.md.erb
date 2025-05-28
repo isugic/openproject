@@ -21,6 +21,17 @@ For each banner, you can provide:
 
 If you don't provide a title for the upsell banner, it will simply use the name of the feature.
 
+### Passing through content
+
+You can pass through additional content to the upsell banner, which will be rendered below the banner if the feature is available
+
+
+```erb
+<%%= render EnterpriseEdition::BannerComponent.new(:enterprise_feature) do %%>
+  Some additional content that will be rendered below the banner, only if the feature is available
+<%% end %%>
+```
+
 ### Defining the text
 
 This is the default convention:

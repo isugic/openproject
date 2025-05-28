@@ -27,17 +27,12 @@ See COPYRIGHT and LICENSE files for more details.
 
 ++#%>
 
-<% allowed = EnterpriseToken.allows_to?(:define_custom_style) %>
-<% tabs = allowed ? design_tabs : [] %>
-<%= render(Admin::DesignHeaderComponent.new(tabs:)) %>
-
 <%= render EnterpriseEdition::BannerComponent.new(
   :define_custom_style,
   variant: :large,
   video: "enterprise/custom-design.mp4"
-) %>
-
-<% if allowed %>
+) do %>
+  <%= render(Admin::DesignHeaderComponent.new(tabs: design_tabs)) %>
   <%= error_messages_for "custom_style" %>
   <%= form_tag update_design_themes_path, method: :post, class: "form" do %>
     <section class="form--section">
