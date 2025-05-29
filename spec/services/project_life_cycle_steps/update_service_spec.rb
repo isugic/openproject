@@ -164,6 +164,17 @@ RSpec.describe ProjectLifeCycleSteps::UpdateService, type: :model do
       end
     end
 
+    context "for following phase with a start date only" do
+      let!(:phase) { create(:project_phase, project:, start_date: date, finish_date: date) }
+      let!(:following) { create(:project_phase, project:, start_date: date + 1, finish_date: nil, duration: 3) }
+
+      it "reschedules by moving the start date only" do
+        expect(service.call(start_date: date, finish_date: date + 1)).to be_success
+
+        expect(following).to have_attributes(start_date: date + 2, finish_date: nil, duration: 3)
+      end
+    end
+
     context "for following phase with date range in the past" do
       let!(:phase) { create(:project_phase, project:, start_date: date, finish_date: date) }
       let!(:following) { create(:project_phase, project:, start_date: date - 10, finish_date: date - 10, duration: 3) }

@@ -74,13 +74,7 @@ module ProjectLifeCycleSteps
       return unless first_definition
 
       phase = project.phases.find_by(definition_id: first_definition.id)
-      return unless phase.date_range_set?
-
-      if phase.active?
-        preceding_active_phase(phase) || phase
-      else
-        phase
-      end
+      preceding_active_phase(phase) || phase
     end
 
     def preceding_active_phase(phase)

@@ -46,20 +46,23 @@ module ProjectLifeCycleSteps
       from = initial_reschedule_date
 
       following_phases.each do |phase|
-        next unless phase.date_range_set?
-        next unless phase.duration&.positive? # not updated using service that sets duration
+        if phase.date_range_set?
+          next unless phase.duration&.positive? # not updated using service that sets duration
 
-        date_range = calculate_date_range(from, duration: phase.duration)
-        next unless date_range
+          date_range = calculate_date_range(from, duration: phase.duration)
+          next unless date_range
 
-        next unless phase.update(start_date: date_range[0], finish_date: date_range[1])
+          next unless phase.update(start_date: date_range[0], finish_date: date_range[1])
 
-        from = date_range[1] + 1
+          from = date_range[1] + 1
+        elsif phase.start_date.present?
+          phase.update(start_date: from)
+        end
       end
     end
 
     def initial_reschedule_date
-      model.active? ? model.finish_date + 1 : model.start_date
+      model.active? ? Day.next_working(from: model.finish_date).date : model.start_date
     end
 
     def following_phases
