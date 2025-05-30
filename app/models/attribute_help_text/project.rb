@@ -47,7 +47,7 @@ class AttributeHelpText::Project < AttributeHelpText
   validates :attribute_name, inclusion: { in: ->(*) { available_attributes.keys } }
 
   def type_caption
-    Project.model_name.human
+    ::Project.model_name.human
   end
 
   def self.visible_condition(_user)
