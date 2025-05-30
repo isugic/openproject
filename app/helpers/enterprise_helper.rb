@@ -29,6 +29,14 @@
 #++
 
 module EnterpriseHelper
+  ##
+  # Renders the enterprise banner component with a guard for the given feature key.
+  # If the feature is not enabled, it will not render the given block.
+  def with_enterprise_banner_guard(feature_key, **args)
+    concat(render(EnterpriseEdition::BannerComponent.new(feature_key, **args)))
+    yield if EnterpriseToken.allows_to?(feature_key)
+  end
+
   def enterprise_angular_trial_inputs
     trial_key = Token::EnterpriseTrialKey.find_by(user_id: User.system.id)
     token = EnterpriseToken.current

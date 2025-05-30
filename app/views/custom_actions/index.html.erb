@@ -28,10 +28,7 @@
 %>
 
 <%=
-  render EnterpriseEdition::BannerComponent.new(
-    :custom_actions,
-    variant: :large,
-    video: "enterprise/custom-actions.mp4"
-  ) do %>
-  <%= render(::CustomActions::TableComponent.new(rows: @custom_actions)) %>
-<% end %>
+  with_enterprise_banner_guard(:custom_actions, variant: :large, video: "enterprise/custom-actions.mp4") do
+    render(::CustomActions::TableComponent.new(rows: @custom_actions))
+  end
+%>

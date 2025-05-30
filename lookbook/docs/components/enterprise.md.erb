@@ -21,17 +21,6 @@ For each banner, you can provide:
 
 If you don't provide a title for the upsell banner, it will simply use the name of the feature.
 
-### Passing through content
-
-You can pass through additional content to the upsell banner, which will be rendered below the banner if the feature is available
-
-
-```erb
-<%%= render EnterpriseEdition::BannerComponent.new(:enterprise_feature) do %%>
-  Some additional content that will be rendered below the banner, only if the feature is available
-<%% end %%>
-```
-
 ### Defining the text
 
 This is the default convention:
@@ -139,3 +128,16 @@ render EnterpriseEdition::BannerComponent.new(
 ```
 
 <%= embed OpenProject::EnterpriseEdition::BannerComponentPreview, :large, panels: %i[] %>
+
+### Passing through content
+
+You can use the helper method `with_enterprise_banner_guard` to conditionally render content based on the availability of an enterprise feature,
+and render a banner at the same time.
+
+This is useful when you want to show content only if the feature is available in the user's current plan.
+
+```erb
+<%%= with_enterprise_banner_guard(:enterprise_feature, **banner_args) do %>
+  Some additional content that will be rendered below the banner, only if the feature is available
+<%% end %>
+```

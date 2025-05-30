@@ -27,7 +27,7 @@ See COPYRIGHT and LICENSE files for more details.
 
 ++#%>
 
-<%= render EnterpriseEdition::BannerComponent.new(
+<%= with_enterprise_banner_guard(
   :define_custom_style,
   variant: :large,
   video: "enterprise/custom-design.mp4"

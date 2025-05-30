@@ -10,8 +10,7 @@ RSpec.describe "LDAP group sync administration spec", :js do
 
   context "without EE" do
     it "shows upsell" do
-      expect(page).to have_enterprise_upsell_page
-      expect(page).to have_text "Available starting with the Premium enterprise plan"
+      expect(page).to have_enterprise_banner(:premium)
     end
   end
 
