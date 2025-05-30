@@ -144,7 +144,7 @@ RSpec.describe EnterpriseEdition::BannerComponent, type: :component do
   context "when banner is dismissed" do
     let(:preference) { build_stubbed(:user_preference) }
     let(:user) { build_stubbed(:user, preference:) }
-    let(:dismiss_key) { :some_enterprise_feature }
+    let(:dismiss_key) { "some_enterprise_feature" }
     let(:component_args) { { dismissable: true } }
 
     before do
@@ -164,7 +164,7 @@ RSpec.describe EnterpriseEdition::BannerComponent, type: :component do
     end
 
     context "when using a custom dismiss_key" do
-      let(:dismiss_key) { :foo }
+      let(:dismiss_key) { "foo" }
       let(:component_args) { { dismiss_key:, dismissable: true } }
 
       it_behaves_like "does not render the component"

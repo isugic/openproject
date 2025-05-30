@@ -44,7 +44,7 @@ module EnterpriseEdition
     VARIANT_OPTIONS = %i[inline medium large].freeze
 
     # @param feature_key [Symbol, NilClass] The key of the feature to show the banner for.
-    # @param variant [Symbol, NilClass] The variant of the banner comopnent.
+    # @param variant [Symbol, NilClass] The variant of the banner component.
     # @param image [String, NilClass] Path to the image to show on the banner, or nil.
     #   Only applicable and required when variant is :medium.
     # @param video [String, NilClass] Path to the video to show on the banner, or nil.
