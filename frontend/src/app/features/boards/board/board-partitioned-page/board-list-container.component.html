@@ -1,6 +1,11 @@
 <ng-container *ngIf="(board$ | async) as board">
+  <op-enterprise-banner-frame
+    class="boards-list--enterprise-banner"
+    feature="board_view"
+    [dismissable]="true"
+  ></op-enterprise-banner-frame>
   <div
-    *ngIf="!needEnterpriseEdition; else enterpriseBanner"
+    *ngIf="available"
     class="boards-list--container"
     [ngClass]="{ '-free' : board.isFree }"
     #container
@@ -38,12 +43,4 @@
       </div>
     </div>
   </div>
-
-  <ng-template #enterpriseBanner>
-    <op-enterprise-banner-frame
-      class="boards-list--enterprise-banner"
-      feature="board_view"
-      [dismissable]="true"
-    ></op-enterprise-banner-frame>
-  </ng-template>
 </ng-container>

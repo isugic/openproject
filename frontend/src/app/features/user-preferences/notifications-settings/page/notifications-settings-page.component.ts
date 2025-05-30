@@ -54,7 +54,7 @@ export class NotificationsSettingsPageComponent extends UntilDestroyedMixin impl
 
   public availableTimesOverdue = overDueReminderTimes();
 
-  public eeShowBanners = false;
+  public eeAvailable = false;
 
   public form = new UntypedFormGroup({
     assignee: new UntypedFormControl(false),
@@ -137,7 +137,7 @@ export class NotificationsSettingsPageComponent extends UntilDestroyedMixin impl
 
   ngOnInit():void {
     this.form.disable();
-    this.eeShowBanners = this.bannersService.showBannerFor('date_alerts');
+    this.eeAvailable = this.bannersService.allowsTo('date_alerts');
 
     this
       .currentUserService

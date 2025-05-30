@@ -71,7 +71,7 @@
     <p>{{ text.dateAlerts.description }}</p>
   </div>
 
-  <div *ngIf="!eeShowBanners">
+  <div *ngIf="eeAvailable">
     <div
       class="op-reminder-settings-date-alerts--row"
       formGroupName="startDate"

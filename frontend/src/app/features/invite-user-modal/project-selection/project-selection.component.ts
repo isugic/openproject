@@ -119,7 +119,14 @@ export class ProjectSelectionComponent implements OnInit {
   }
 
   private setPlaceholderOption():void {
-    if (this.bannersService.showBannerFor('placeholder_users')) {
+    if (this.bannersService.allowsTo('placeholder_users')) {
+      this.typeOptions.push({
+        value: PrincipalType.Placeholder,
+        title: this.I18n.t('js.invite_user_modal.type.placeholder.title'),
+        description: this.I18n.t('js.invite_user_modal.type.placeholder.description'),
+        disabled: false,
+      });
+    } else {
       this.typeOptions.push({
         value: PrincipalType.Placeholder,
         title: this.I18n.t('js.invite_user_modal.type.placeholder.title_no_ee'),
@@ -130,13 +137,6 @@ export class ProjectSelectionComponent implements OnInit {
           }),
         }),
         disabled: true,
-      });
-    } else {
-      this.typeOptions.push({
-        value: PrincipalType.Placeholder,
-        title: this.I18n.t('js.invite_user_modal.type.placeholder.title'),
-        description: this.I18n.t('js.invite_user_modal.type.placeholder.description'),
-        disabled: false,
       });
     }
   }

@@ -28,7 +28,7 @@ export class WpTableConfigurationHighlightingTabComponent implements TabComponen
 
   public lastEntireRowAttribute:HighlightingMode = 'status';
 
-  public eeShowBanners = false;
+  public eeAvailable = false;
 
   public availableInlineHighlightedAttributes:HalResource[] = [];
 
@@ -74,10 +74,10 @@ export class WpTableConfigurationHighlightingTabComponent implements TabComponen
 
     this.setSelectedValues();
 
-    this.eeShowBanners = this.Banners.showBannerFor('conditional_highlighting');
+    this.eeAvailable = this.Banners.allowsTo('conditional_highlighting');
     this.updateMode(this.wpTableHighlight.current.mode);
 
-    if (this.eeShowBanners) {
+    if (!this.eeAvailable) {
       this.updateMode('none');
     }
   }
@@ -106,8 +106,8 @@ export class WpTableConfigurationHighlightingTabComponent implements TabComponen
     this.selectedAttributes = model;
   }
 
-  public disabledValue(value:boolean):string | null {
-    return value ? 'disabled' : null;
+  public disabledValue(allowed:boolean):string | null {
+    return allowed ? null : 'disabled';
   }
 
   public get availableHighlightedAttributes():HalResource[] {

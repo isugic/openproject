@@ -88,7 +88,7 @@ export class BoardListContainerComponent extends UntilDestroyedMixin implements 
 
   showHiddenListWarning:boolean = false;
 
-  needEnterpriseEdition = this.Banner.showBannerFor('board_view');
+  available = this.Banner.allowsTo('board_view');
 
   private currentQueryUpdatedMonitoring:Subscription;
 
@@ -126,7 +126,7 @@ readonly I18n:I18nService,
       );
 
     this.board$.subscribe((board) => {
-      this.needEnterpriseEdition = this.Banner.showBannerFor('board_view') && !board.isFree;
+      this.available = this.Banner.allowsTo('board_view') || board.isFree;
     });
 
     this.Boards.currentBoard$.next(id);

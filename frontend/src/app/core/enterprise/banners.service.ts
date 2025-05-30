@@ -43,7 +43,19 @@ export class BannersService {
   }
 
   public showBannerFor(feature:string):boolean {
-    return !(this._bannersHidden || this.configuration.availableFeatures.includes(feature));
+    if (this._bannersHidden) {
+      return false;
+    }
+
+    return !this.allowsTo(feature) || this.trialling(feature);
+  }
+
+  public allowsTo(feature:string):boolean {
+    return this.configuration.availableFeatures.includes(feature);
+  }
+
+  public trialling(feature:string):boolean {
+    return this.configuration.triallingFeatures.includes(feature);
   }
 
   public getEnterPriseEditionUrl({ referrer, hash }:{ referrer?:string, hash?:string } = {}) {
@@ -59,13 +71,13 @@ export class BannersService {
     return url.toString();
   }
 
-  public async conditional(feature:string, bannersVisible?:() => void, bannersNotVisible?:() => void) {
+  public async conditional(feature:string, featureAvailable?:() => void, featureNotAvailable?:() => void) {
     await this.configuration.initialize();
 
-    if (this.showBannerFor(feature)) {
-      this.callMaybe(bannersVisible);
+    if (this.allowsTo(feature)) {
+      this.callMaybe(featureAvailable);
     } else {
-      this.callMaybe(bannersNotVisible);
+      this.callMaybe(featureNotAvailable);
     }
   }
 

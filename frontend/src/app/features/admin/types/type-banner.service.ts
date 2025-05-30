@@ -7,7 +7,7 @@ import { ConfigurationService } from 'core-app/core/config/configuration.service
 
 @Injectable()
 export class TypeBannerService extends BannersService {
-  showBanners = this.showBannerFor('edit_attribute_groups');
+  eeAvailable = this.allowsTo('edit_attribute_groups');
 
   constructor(
     @Inject(DOCUMENT) protected documentElement:Document,

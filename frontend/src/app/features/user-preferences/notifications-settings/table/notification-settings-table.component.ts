@@ -21,7 +21,7 @@ export class NotificationSettingsTableComponent implements OnInit {
 
   @Input() settings:UntypedFormArray;
 
-  public eeShowBanners = false;
+  public eeAvailable = false;
 
   public availableTimes = [
     {
@@ -81,7 +81,7 @@ export class NotificationSettingsTableComponent implements OnInit {
   ) {}
 
   ngOnInit():void {
-    this.eeShowBanners = this.bannersService.showBannerFor('date_alerts');
+    this.eeAvailable = this.bannersService.allowsTo('date_alerts');
   }
 
   projectLink(href:string) {

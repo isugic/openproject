@@ -9,7 +9,7 @@
     <div class="form--field">
       <label class="form--label">
         <input type="radio"
-               [attr.disabled]="disabledValue(eeShowBanners)"
+               [attr.disabled]="disabledValue(eeAvailable)"
                [(ngModel)]="highlightingMode"
                (change)="updateMode($event.target.value)"
                value="inline"
@@ -41,7 +41,7 @@
     <div class="form--field">
       <label class="form--label">
         <input type="radio"
-               [attr.disabled]="disabledValue(eeShowBanners)"
+               [attr.disabled]="disabledValue(eeAvailable)"
                [(ngModel)]="entireRowMode"
                (change)="updateMode('entire-row')"
                [value]="true"
@@ -54,7 +54,7 @@
           <ng-select #rowHighlightNgSelect
                      [items]="availableRowHighlightedAttributes"
                      [(ngModel)]="lastEntireRowAttribute"
-                     [disabled]="disabledValue(eeShowBanners)"
+                     [disabled]="disabledValue(eeAvailable)"
                      [clearable]="false"
                      (open)="onOpen(rowHighlightNgSelect)"
                      (change)="updateMode($event.value)"
@@ -72,7 +72,7 @@
     <div class="form--field">
       <label class="form--label">
         <input type="radio"
-               [attr.disabled]="disabledValue(eeShowBanners)"
+               [attr.disabled]="disabledValue(eeAvailable)"
                [(ngModel)]="highlightingMode"
                (change)="updateMode($event.target.value)"
                value="none"

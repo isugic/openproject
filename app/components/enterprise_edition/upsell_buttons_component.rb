@@ -66,7 +66,7 @@ module EnterpriseEdition
     end
 
     def free_trial_button
-      return if EnterpriseToken.active? && EnterpriseToken.trial?
+      return if EnterpriseToken.active?
       return unless User.current.admin?
 
       helpers.angular_component_tag(
@@ -76,7 +76,7 @@ module EnterpriseEdition
     end
 
     def buy_now_button
-      return unless EnterpriseToken.active? && EnterpriseToken.trial?
+      return unless EnterpriseToken.active?
       return unless User.current.admin?
 
       render(Primer::Beta::Button.new(

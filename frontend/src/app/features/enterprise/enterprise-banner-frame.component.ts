@@ -43,6 +43,7 @@ export class EnterpriseBannerFrameComponent implements OnInit {
 
   visible:boolean;
   frameURL:string;
+  frameID:string;
 
   constructor(
     protected pathHelper:PathHelperService,
@@ -53,5 +54,8 @@ export class EnterpriseBannerFrameComponent implements OnInit {
   ngOnInit() {
     this.visible = this.banners.showBannerFor(this.feature);
     this.frameURL = this.pathHelper.bannerFramePath(this.feature, this.dismissable);
+
+    const trialSuffix = this.banners.trialling(this.feature) ? '_trial' : '';
+    this.frameID = `enterprise_banner_${this.feature}${trialSuffix}`;
   }
 }

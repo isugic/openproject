@@ -32,7 +32,7 @@ export class WorkPackageViewHighlightingService extends WorkPackageQueryStateSer
    */
   public shouldHighlightInline(name:string):boolean {
     // 1. Are we in inline mode or unable to render?
-    if (!this.isInline || this.Banners.showBannerFor('conditional_highlighting')) {
+    if (!this.isInline || !this.Banners.allowsTo('conditional_highlighting')) {
       return false;
     }
 

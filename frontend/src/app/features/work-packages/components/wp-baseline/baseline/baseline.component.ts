@@ -98,7 +98,7 @@ export class OpBaselineComponent extends UntilDestroyedMixin implements OnInit {
 
   public tooltipPosition = SpotDropAlignmentOption.TopRight;
 
-  available = !this.Banner.showBannerFor('baseline_comparison');
+  available = this.Banner.allowsTo('baseline_comparison');
 
   public text = {
     toggle_title: this.I18n.t('js.baseline.toggle_title'),
