@@ -117,3 +117,14 @@ ul.SegmentedControl,
 .generic-table
   .generic-table--action-menu-button
     min-width: max-content !important
+
+.FormControl-label:has(.op-attribute-help-text)
+  @extend .op-attribute-label
+
+  // the width of a space between the label text and asterisk
+  > :not(.op-attribute-help-text)::before
+    content: "\00a0"
+
+  // we override ordering to display help text after the asterisk
+  > .op-attribute-help-text
+    order: 1

@@ -28,28 +28,45 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-require "spec_helper"
+module OpenProject
+  module Common
+    class AttributeHelpTextComponent < ApplicationComponent
+      def initialize(help_text:, **system_arguments) # rubocop:disable Metrics/AbcSize
+        super()
 
-RSpec.describe AttributeHelpTextsController do
-  it "routes to show_dialog" do
-    expect(get("/attribute_help_texts/1/show_dialog"))
-      .to route_to(controller: "attribute_help_texts", action: "show_dialog", id: "1")
-  end
+        @help_text = help_text
 
-  it "routes CRUD to the controller" do
-    expect(get("/admin/attribute_help_texts"))
-      .to route_to(controller: "attribute_help_texts", action: "index")
+        @system_arguments = system_arguments
+        @system_arguments[:id] ||= self.class.generate_id(help_text)
+        @system_arguments[:muted] = true
+        @system_arguments[:classes] = class_names(
+          @system_arguments[:classes],
+          "op-attribute-help-text"
+        )
+        @system_arguments[:data] ||= {}
+        @system_arguments[:data][:controller] = "async-dialog"
 
-    expect(get("/admin/attribute_help_texts/1/edit"))
-      .to route_to(controller: "attribute_help_texts", action: "edit", id: "1")
+        @tooltip = Primer::Alpha::Tooltip.new(
+          for_id: @system_arguments[:id],
+          type: :label,
+          text: I18n.t("js.help_texts.show_modal"),
+          direction: :e
+        )
+        @system_arguments[:aria] ||= {}
+        @system_arguments[:aria][:labelledby] = @tooltip.id
+      end
 
-    expect(post("/admin/attribute_help_texts"))
-      .to route_to(controller: "attribute_help_texts", action: "create")
+      private
 
-    expect(put("/admin/attribute_help_texts/1"))
-      .to route_to(controller: "attribute_help_texts", action: "update", id: "1")
+      def render?
+        @help_text.present?
+      end
 
-    expect(delete("/admin/attribute_help_texts/1"))
-      .to route_to(controller: "attribute_help_texts", action: "destroy", id: "1")
+      def before_render
+        return unless @help_text
+
+        @system_arguments[:href] = show_dialog_attribute_help_text_path(@help_text)
+      end
+    end
   end
 end

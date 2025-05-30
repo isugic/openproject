@@ -116,6 +116,12 @@ Rails.application.routes.draw do
     post "/account/confirm_consent", action: "confirm_consent", as: "account_confirm_consent"
   end
 
+  resources :attribute_help_texts, only: [] do
+    member do
+      get :show_dialog
+    end
+  end
+
   # Because of https://github.com/intridea/grape/pull/853/files this has to be
   # placed behind handling the deprecated v1 because otherwise, a 405 is
   # returned for all routes for which the v3 has also resources. Grape does

@@ -35,11 +35,12 @@ module Overviews
       include CustomFieldsHelper
       include OpPrimer::ComponentHelpers
 
-      def initialize(project_custom_field:, project_custom_field_values:)
+      def initialize(project_custom_field:, project_custom_field_values:, project:)
         super
 
         @project_custom_field = project_custom_field
         @project_custom_field_values = project_custom_field_values
+        @project = project
       end
 
       private

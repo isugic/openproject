@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-#-- copyright
+# -- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
 #
@@ -26,30 +26,32 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 # See COPYRIGHT and LICENSE files for more details.
-#++
+# ++
 
-require "spec_helper"
+class AttributeHelpTexts::ShowDialogComponent < ApplicationComponent
+  include OpTurbo::Streamable
 
-RSpec.describe AttributeHelpTextsController do
-  it "routes to show_dialog" do
-    expect(get("/attribute_help_texts/1/show_dialog"))
-      .to route_to(controller: "attribute_help_texts", action: "show_dialog", id: "1")
+  DIALOG_ID = "attribute-help-text-show-modal"
+
+  def initialize(attribute_help_text:, current_user: User.current)
+    super
+    @attribute_help_text = attribute_help_text
+    @current_user = current_user
   end
 
-  it "routes CRUD to the controller" do
-    expect(get("/admin/attribute_help_texts"))
-      .to route_to(controller: "attribute_help_texts", action: "index")
+  private
 
-    expect(get("/admin/attribute_help_texts/1/edit"))
-      .to route_to(controller: "attribute_help_texts", action: "edit", id: "1")
+  def dialog_id = DIALOG_ID
 
-    expect(post("/admin/attribute_help_texts"))
-      .to route_to(controller: "attribute_help_texts", action: "create")
+  def title = @attribute_help_text.attribute_caption
 
-    expect(put("/admin/attribute_help_texts/1"))
-      .to route_to(controller: "attribute_help_texts", action: "update", id: "1")
+  def has_attachments? = @attribute_help_text.attachments.any?
 
-    expect(delete("/admin/attribute_help_texts/1"))
-      .to route_to(controller: "attribute_help_texts", action: "destroy", id: "1")
+  def allowed_to_edit? = @current_user.allowed_globally?(:edit_attribute_help_texts)
+
+  def edit_button_href = url_helpers.edit_attribute_help_text_path(@attribute_help_text)
+
+  def resource_representer
+    ::API::V3::HelpTexts::HelpTextRepresenter.new(@attribute_help_text, current_user: @current_user, embed_links: false)
   end
 end

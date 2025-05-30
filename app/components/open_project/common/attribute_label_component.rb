@@ -28,28 +28,32 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-require "spec_helper"
+module OpenProject
+  module Common
+    class AttributeLabelComponent < ApplicationComponent
+      def initialize(
+        attribute:,
+        model:,
+        tag: :span,
+        current_user: User.current,
+        **system_arguments
+      )
+        super()
 
-RSpec.describe AttributeHelpTextsController do
-  it "routes to show_dialog" do
-    expect(get("/attribute_help_texts/1/show_dialog"))
-      .to route_to(controller: "attribute_help_texts", action: "show_dialog", id: "1")
-  end
+        @tag = tag
+        @system_arguments = system_arguments
+        @system_arguments[:tag] = @tag
+        @system_arguments[:classes] = class_names(
+          @system_arguments[:classes],
+          "op-attribute-label"
+        )
 
-  it "routes CRUD to the controller" do
-    expect(get("/admin/attribute_help_texts"))
-      .to route_to(controller: "attribute_help_texts", action: "index")
+        help_text_class = ::AttributeHelpText.for(model)
+        @help_text = help_text_class.cached(current_user)[attribute.to_s] if help_text_class
+      end
 
-    expect(get("/admin/attribute_help_texts/1/edit"))
-      .to route_to(controller: "attribute_help_texts", action: "edit", id: "1")
+      private
 
-    expect(post("/admin/attribute_help_texts"))
-      .to route_to(controller: "attribute_help_texts", action: "create")
-
-    expect(put("/admin/attribute_help_texts/1"))
-      .to route_to(controller: "attribute_help_texts", action: "update", id: "1")
-
-    expect(delete("/admin/attribute_help_texts/1"))
-      .to route_to(controller: "attribute_help_texts", action: "destroy", id: "1")
+    end
   end
 end

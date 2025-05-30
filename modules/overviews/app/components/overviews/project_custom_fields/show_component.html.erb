@@ -28,7 +28,8 @@
             render(
               Overviews::ProjectCustomFields::ItemComponent.new(
                 project_custom_field:,
-                project_custom_field_values: get_eager_loaded_project_custom_field_values_for(project_custom_field.id)
+                project_custom_field_values: get_eager_loaded_project_custom_field_values_for(project_custom_field.id),
+                project: @project
               )
             )
           end

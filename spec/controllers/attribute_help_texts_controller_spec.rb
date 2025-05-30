@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe AttributeHelpTextsController do
   let(:user) { build_stubbed(:user) }
-  let(:model) { build(:work_package_help_text) }
+  let(:model) { build_stubbed(:work_package_help_text) }
 
   let(:find_expectation) do
     allow(AttributeHelpText)
@@ -31,6 +31,50 @@ RSpec.describe AttributeHelpTextsController do
     it "is successful" do
       expect(response).to be_successful
       expect(assigns(:texts_by_type)).to eql("WorkPackage" => [model])
+    end
+  end
+
+  describe "#show_dialog" do
+    let(:visible_scope) { instance_double(ActiveRecord::Relation) }
+
+    before do
+      allow(AttributeHelpText)
+        .to receive(:visible)
+        .with(user)
+        .and_return(visible_scope)
+
+      find_expectation
+
+      get :show_dialog, params: { id: 1234 }, format: :turbo_stream
+    end
+
+    context "when found" do
+      let(:find_expectation) do
+        allow(visible_scope)
+          .to receive(:find)
+          .with("1234")
+          .and_return(model)
+      end
+
+      it "renders turbo stream dialog action", :aggregate_failures do
+        expect(response).to be_successful
+        expect(assigns(:attribute_help_text)).to eq model
+        expect(response).to have_turbo_stream action: "dialog", target: "attribute-help-texts-show-dialog-component"
+      end
+    end
+
+    context "when not found" do
+      let(:find_expectation) do
+        allow(visible_scope)
+          .to receive(:find)
+          .with("1234")
+          .and_raise(ActiveRecord::RecordNotFound)
+      end
+
+      it "responds with 404 Not Found status", :aggregate_failures do
+        expect(response).not_to be_successful
+        expect(response).to have_http_status :not_found
+      end
     end
   end
 

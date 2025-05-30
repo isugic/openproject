@@ -29,6 +29,14 @@
 class AttributeHelpText < ApplicationRecord
   acts_as_attachable viewable_by_all_users: true
 
+  def self.cached(user)
+    OpenProject::Cache.fetch([name, user]) { visible(user).select(:id, :attribute_name).index_by(&:attribute_name) }
+  end
+
+  def self.for(model)
+    subclasses.find { |child| child.name.demodulize == model.model_name }
+  end
+
   def self.available_types
     subclasses.map { |child| child.name.demodulize }
   end

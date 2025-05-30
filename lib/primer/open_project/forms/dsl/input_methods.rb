@@ -44,6 +44,21 @@ module Primer
           def work_package_autocompleter(**, &)
             add_input WorkPackageAutocompleterInput.new(builder:, form:, **, &)
           end
+
+          def decorate_options(include_help_text: true, **options)
+            if include_help_text && supports_help_texts?(builder.object)
+              options[:label] = form.wrap_attribute_label_with_help_text(options[:label], options[:name])
+            end
+            options
+          end
+
+          private
+
+          def supports_help_texts?(model)
+            return @supports_help_texts if defined?(@supports_help_texts)
+
+            @supports_help_texts = model && ::AttributeHelpText.available_types.include?(model.model_name)
+          end
         end
       end
     end

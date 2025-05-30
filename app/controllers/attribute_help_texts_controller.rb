@@ -27,15 +27,27 @@
 #++
 
 class AttributeHelpTextsController < ApplicationController
+  include OpTurbo::ComponentStream
+  include OpTurbo::DialogStreamHelper
+
   layout "admin"
   menu_item :attribute_help_texts
 
-  before_action :authorize_global
+  before_action :authorize_global, except: :show_dialog
   before_action :find_entry, only: %i(edit update destroy)
   before_action :find_type_scope
 
+  authorization_checked! :show_dialog
+
   def index
     @texts_by_type = AttributeHelpText.all_by_scope
+  end
+
+  def show_dialog
+    @attribute_help_text = AttributeHelpText.visible(current_user).find(params[:id])
+    respond_with_dialog(
+      AttributeHelpTexts::ShowDialogComponent.new(attribute_help_text: @attribute_help_text)
+    )
   end
 
   def new

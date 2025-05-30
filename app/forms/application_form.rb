@@ -29,6 +29,8 @@
 #++
 
 class ApplicationForm < Primer::Forms::Base
+  include AttributeHelpTexts::FormHelper
+
   def self.settings_form
     form do |f|
       f = Settings::FormDecorator.new(f)
@@ -41,9 +43,7 @@ class ApplicationForm < Primer::Forms::Base
   end
 
   # @return [ActionView::Base] the view helper instance
-  def helpers
-    @view_context.helpers
-  end
+  delegate :helpers, to: :@view_context
 
   # @return [ActiveRecord::Base] the model instance given to the form builder
   def model
