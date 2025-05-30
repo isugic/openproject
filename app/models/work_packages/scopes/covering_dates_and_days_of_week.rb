@@ -59,30 +59,25 @@ module WorkPackages::Scopes::CoveringDatesAndDaysOfWeek
         -- select work packages dates
         WITH
           -- cte returning a table with work package id, period start_date and end_date
-          #{work_packages_periods_cte},
-
-          -- All days between the start date of a work package and its due date
-          covered_dates AS (
-            SELECT
-            id,
-            generate_series(work_packages_periods.start_date,
-                            work_packages_periods.end_date,
-                            '1 day')          AS date
-            FROM work_packages_periods
-          ),
-
-          -- All days between the start date of a work package and its due date including the day of the week for each date
-          covered_dates_and_wday AS (
-            SELECT
-              id,
-              date,
-              EXTRACT(isodow FROM date) dow
-            FROM covered_dates
-          )
+          #{work_packages_periods_cte}
 
         -- select id of work packages covering the given days
-        SELECT id FROM covered_dates_and_wday
-        WHERE dow IN (:days_of_week) OR date IN (:dates)
+        SELECT id
+        FROM work_packages_periods
+        WHERE
+          -- Check if the first day of the week after the start date is smaller than or equal to the end date
+          EXISTS (
+            SELECT 1
+            FROM UNNEST(ARRAY[:days_of_week]::INT[]) AS target_dow
+            WHERE (target_dow + 7 - EXTRACT(ISODOW FROM start_date)::INT) % 7 <= (end_date - start_date)
+          )
+          OR
+          -- Check if the range covers any of the provided dates
+          EXISTS (
+            SELECT 1
+            FROM unnest(Array[:dates]::DATE[]) AS target_date
+            WHERE target_date BETWEEN start_date AND end_date
+          )
       SQL
 
       covering_work_packages_query_sql = sanitize_sql([covering_work_packages_query_sql, { days_of_week:, dates: }])
@@ -146,8 +141,8 @@ module WorkPackages::Scopes::CoveringDatesAndDaysOfWeek
         work_packages_periods AS (
           SELECT DISTINCT ON (succ_id)
             pred_id as id,
-            pred_date as start_date,
-            succ_date as end_date
+            pred_date::DATE as start_date,
+            succ_date::DATE as end_date
           FROM automatic_follows_relations
           ORDER BY succ_id, pred_date ASC
         )
