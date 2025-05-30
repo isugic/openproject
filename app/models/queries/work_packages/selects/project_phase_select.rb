@@ -85,7 +85,7 @@ class Queries::WorkPackages::Selects::ProjectPhaseSelect < Queries::WorkPackages
     # We use the join alias from the group by join statement to ensure that work packages with an *inactive* project
     # phase are treated like work packages *without* a project phase. In the result list, they will belong to the
     # same group: without an active project phase.
-    "pd.position"
+    "COALESCE(pd.position, -1)"
   end
 
   def self.instances(context = nil)

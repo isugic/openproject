@@ -96,7 +96,7 @@ RSpec.describe "Project phase field in the work package table", :js do
         let(:sort_criteria) { [%w[project_phase asc]] }
 
         it "sorts ASC by phase position" do
-          wp_table.expect_work_package_order(other_wp, work_package, wp_without_phase)
+          wp_table.expect_work_package_order(wp_without_phase, other_wp, work_package)
         end
       end
 
@@ -104,7 +104,7 @@ RSpec.describe "Project phase field in the work package table", :js do
         let(:sort_criteria) { [%w[project_phase desc]] }
 
         it "sorts DESC by phase position" do
-          wp_table.expect_work_package_order(wp_without_phase, work_package, other_wp)
+          wp_table.expect_work_package_order(work_package, other_wp, wp_without_phase)
         end
       end
 
@@ -127,11 +127,11 @@ RSpec.describe "Project phase field in the work package table", :js do
         end
 
         it "includes the group icon in the group row header" do
-          within("#wp-table-rowgroup-0") do
+          within("#wp-table-rowgroup-1") do
             expect(page).to have_test_selector("project-phase-icon #{other_project_phase.name}")
           end
 
-          within("#wp-table-rowgroup-1") do
+          within("#wp-table-rowgroup-2") do
             expect(page).to have_test_selector("project-phase-icon #{project_phase.name}")
           end
         end
@@ -147,10 +147,18 @@ RSpec.describe "Project phase field in the work package table", :js do
         wp_table.expect_work_package_with_attributes(wp_without_phase, { projectPhase: "-" })
       end
 
+      context "when sorting by project phase ASC" do
+        let(:sort_criteria) { [%w[project_phase asc]] }
+
+        it "sorts work packages with an inactive project phase like work packages without a project phase" do
+          wp_table.expect_work_package_order(wp_without_phase, other_wp, work_package)
+        end
+      end
+
       context "when grouping" do
         let(:group_by) { :project_phase }
 
-        it "treats work packages with an inactive project phase like work packages without a project phase" do
+        it "groups work packages with an inactive project phase like work packages without a project phase" do
           wp_table.expect_groups({
                                    project_phase.name => 1,
                                    "-" => 2
