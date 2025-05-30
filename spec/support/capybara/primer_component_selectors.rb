@@ -55,6 +55,30 @@ Capybara.add_selector :primer_label, locator_type: [String, Symbol] do
   end
 end
 
+Capybara.add_selector :octicon, locator_type: [String, Symbol] do
+  label "Octicon"
+
+  xpath do |locator|
+    xpath = XPath.descendant(:svg)
+    xpath = builder(xpath).add_attribute_conditions(class: "octicon")
+    xpath = builder(xpath).add_attribute_conditions(class: "octicon-#{locator.to_s.downcase}") if locator
+    xpath
+  end
+
+  expression_filter(:size, valid_values: [Numeric, *Primer::Beta::Octicon::SIZE_OPTIONS]) do |expr, size|
+    px_size = size.is_a?(Numeric) ? size : Primer::Beta::Octicon::SIZE_MAPPINGS.fetch(size)
+    builder(expr).add_attribute_conditions(width: px_size, height: px_size)
+  end
+
+  describe_expression_filters do |size: nil, **|
+    desc = +""
+    if size.present?
+      desc << size.is_a?(Numeric) ? " with size #{size}px" : " with #{size} size"
+    end
+    desc
+  end
+end
+
 module Capybara
   module RSpecMatchers
     def have_primer_label(locator = nil, **, &)
@@ -63,6 +87,14 @@ module Capybara
 
     def have_no_primer_label(...)
       Matchers::NegatedMatcher.new(have_primer_label(...))
+    end
+
+    def have_octicon(locator = nil, **, &)
+      Matchers::HaveSelector.new(:octicon, locator, **, &)
+    end
+
+    def have_no_octicon(...)
+      Matchers::NegatedMatcher.new(have_octicon(...))
     end
   end
 end
