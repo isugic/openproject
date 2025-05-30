@@ -67,16 +67,14 @@ module Project::Phases::Scopes::CoveringDatesAndDaysOfWeek
           -- Check if the first day of the week after the start date is smaller than or equal to the finish date
           EXISTS (
             SELECT 1
-            FROM unnest(Array[:days_of_week]::INT4[]) AS target_dow
-            WHERE (
-              MOD((target_dow + 7 - EXTRACT(isodow FROM start_date)) % 7, 7) <= (finish_date - start_date)
-            )
+            FROM UNNEST(ARRAY[:days_of_week]::INT[]) AS target_dow
+            WHERE (target_dow + 7 - EXTRACT(ISODOW FROM start_date)::INT) % 7 <= finish_date - start_date
           )
           OR
           -- Check if the range covers any of the provided dates
           EXISTS (
             SELECT 1
-            FROM unnest(Array[:dates]::DATE[]) AS target_date
+            FROM UNNEST(ARRAY[:dates]::DATE[]) AS target_date
             WHERE target_date BETWEEN start_date AND finish_date
           )
       SQL
