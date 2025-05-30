@@ -86,10 +86,8 @@ module Statuses
         }
       )
 
-      if readonly_work_packages_restricted?
-        statuses_form.html_content do
-          render(EnterpriseEdition::BannerComponent.new(:readonly_work_packages))
-        end
+      statuses_form.html_content do
+        render(EnterpriseEdition::BannerComponent.new(:readonly_work_packages))
       end
 
       statuses_form.check_box(

@@ -32,6 +32,6 @@ module Projects::LifeCycleDefinitionHelper
   private
 
   def allowed_to_customize_life_cycle?
-    EnterpriseToken.allows_to?(:customize_life_cycle)
+    EnterpriseToken.allows_to?(:customize_life_cycle) || EnterpriseToken.trialling?(:customize_life_cycle)
   end
 end

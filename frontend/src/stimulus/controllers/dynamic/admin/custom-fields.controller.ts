@@ -56,10 +56,12 @@ export default class CustomFieldsController extends Controller {
   static values = {
     formatConfig: Array,
     enterpriseEdition: Boolean,
+    hierarchyDisabled: Boolean,
   };
 
   declare readonly formatConfigValue:[string, string, string[]][];
   declare readonly enterpriseEditionValue:boolean;
+  declare readonly hierarchyDisabledValue:boolean;
 
   declare readonly formatTarget:HTMLInputElement;
   declare readonly dragContainerTarget:HTMLElement;
@@ -252,7 +254,7 @@ export default class CustomFieldsController extends Controller {
 
   private toggleFormat(format:string) {
     if (this.hasSubmitButtonTarget) {
-      this.submitButtonTarget.disabled = format === 'hierarchy' && !this.enterpriseEditionValue;
+      this.submitButtonTarget.disabled = format === 'hierarchy' && !this.hierarchyDisabledValue;
     }
 
     this.formatConfigValue.forEach(([targetsName, operator, formats]) => {

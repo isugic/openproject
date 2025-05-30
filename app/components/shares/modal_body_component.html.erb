@@ -7,7 +7,9 @@
         end
       end
 
-      render(strategy.manage_shares_component(modal_content:, errors:))
+      render(Shares::ProjectQueries::UpsellComponent.new(modal_content:))
+
+      render(strategy.manage_shares_component(modal_content:, errors:)) if EnterpriseToken.allows_to?(:project_list_sharing)
     end
   end
 %>

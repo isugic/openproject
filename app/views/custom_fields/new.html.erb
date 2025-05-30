@@ -46,7 +46,8 @@ See COPYRIGHT and LICENSE files for more details.
 <% content_controller "admin--custom-fields",
                       dynamic: true,
                       "admin--custom-fields-format-config-value": OpenProject::CustomFieldFormatDependent.stimulus_config,
-                      "admin--custom-fields-enterprise-edition-value": EnterpriseToken.allows_to?(:custom_field_hierarchies) %>
+                      "admin--custom-fields-enterprise-edition-value": EnterpriseToken.allows_to?(:custom_field_hierarchies) && !EnterpriseToken.trial?,
+                      "admin--custom-fields-hierarchy-disabled-value": EnterpriseToken.allows_to?(:custom_field_hierarchies) %>
 
 <%= labelled_tabular_form_for @custom_field, as: :custom_field,
                                              url: custom_fields_path,
