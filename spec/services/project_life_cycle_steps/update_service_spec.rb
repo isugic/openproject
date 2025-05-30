@@ -102,6 +102,7 @@ RSpec.describe ProjectLifeCycleSteps::UpdateService, type: :model do
         mock.allow_in_project(:edit_project_phases, project:)
       end
 
+      allow(Project).to receive(:allowed_to).with(user, :view_project_attributes).and_return(Project.all)
       allow(Project).to receive(:allowed_to).with(user, :view_project_phases).and_return(Project.all)
     end
 
