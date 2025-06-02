@@ -91,8 +91,18 @@ export class GroupHeaderBuilder {
     return row;
   }
 
+  /**
+   * Returns a leading icon to be rendered in front of the group, if applicable. Will use the hrefs of the group
+   * to determine whether there is a known icon for this type or not.
+   * @param group the group object to check for a leading icon.
+   * @private
+   */
   private leadingIcon(group:GroupObject) {
-    if (group.leadingIcon === 'projectPhaseDefinition') {
+    const isProjectPhase = group.href.some((item) =>
+      // will also match project phase definitions
+      item.href !== null && item.href.includes('api/v3/project_phase'));
+
+    if (isProjectPhase) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return ProjectPhaseDisplayField.phaseIconByName(groupName(group), false);
     }
