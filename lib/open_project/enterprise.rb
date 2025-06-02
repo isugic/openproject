@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #-- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
@@ -36,7 +38,7 @@ module OpenProject
       delegate :user_limit, to: EnterpriseToken
 
       def upgrade_path
-        url_helpers.enterprise_path
+        url_helpers.enterprise_tokens_path
       end
 
       def active_user_count
