@@ -105,6 +105,14 @@ module SharingStrategies
       end
     end
 
+    def manage_shares_component(modal_content:, errors:)
+      if EnterpriseToken.allows_to?(:project_list_sharing)
+        super
+      else
+        Shares::ProjectQueries::UpsellComponent.new(modal_content:)
+      end
+    end
+
     def title
       I18n.t(:label_share_project_list)
     end
