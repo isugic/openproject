@@ -139,11 +139,11 @@ RSpec.describe "Project phase field in the work package table", :js do
     end
 
     context "with one phase being inactive" do
-      let(:other_project_phase) { create(:project_phase, active: false) }
+      let(:project_phase) { create(:project_phase, definition: project_phase_definition, active: false) }
 
       it "does not show the inactive phase" do
-        wp_table.expect_work_package_with_attributes(work_package, { projectPhase: project_phase.name })
-        wp_table.expect_work_package_with_attributes(other_wp, { projectPhase: "-" })
+        wp_table.expect_work_package_with_attributes(other_wp, { projectPhase: other_project_phase.name })
+        wp_table.expect_work_package_with_attributes(work_package, { projectPhase: "-" })
         wp_table.expect_work_package_with_attributes(wp_without_phase, { projectPhase: "-" })
       end
 
@@ -151,7 +151,7 @@ RSpec.describe "Project phase field in the work package table", :js do
         let(:sort_criteria) { [%w[project_phase asc]] }
 
         it "sorts work packages with an inactive project phase like work packages without a project phase" do
-          wp_table.expect_work_package_order(wp_without_phase, other_wp, work_package)
+          wp_table.expect_work_package_order(work_package, wp_without_phase, other_wp)
         end
       end
 
@@ -160,7 +160,7 @@ RSpec.describe "Project phase field in the work package table", :js do
 
         it "groups work packages with an inactive project phase like work packages without a project phase" do
           wp_table.expect_groups({
-                                   project_phase.name => 1,
+                                   other_project_phase.name => 1,
                                    "-" => 2
                                  })
         end
