@@ -28,14 +28,38 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-module ProjectLifeCycleSteps
-  class RescheduleContract < BaseContract
-    alias_method :project, :model
+require "spec_helper"
+require "contracts/shared/model_contract_shared_context"
 
-    protected
+RSpec.describe ProjectLifeCycleSteps::RescheduleContract do
+  include_context "ModelContract shared context"
 
-    def validate_model?
-      false
+  let(:user) { build_stubbed(:user) }
+
+  subject(:contract) { described_class.new(project, user) }
+
+  context "with authorized user" do
+    let(:project) { build_stubbed(:project) }
+
+    before do
+      mock_permissions_for(user) do |mock|
+        mock.allow_in_project(:edit_project_phases, project:)
+      end
     end
+
+    it_behaves_like "contract is valid"
+    it_behaves_like "contract reuses the model errors"
+
+    context "when project is invalid" do
+      let(:project) { build_stubbed(:project, name: "") }
+
+      it_behaves_like "contract is valid"
+    end
+  end
+
+  context "with unauthorized user" do
+    let(:project) { build_stubbed(:project) }
+
+    it_behaves_like "contract user is unauthorized"
   end
 end
