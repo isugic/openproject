@@ -35,11 +35,21 @@ $arrow-left-width: 40px
   background: var(--main-menu-bg-hover-background)
   color: var(--main-menu-hover-font-color)
   border: 1px solid var(--main-menu-hover-border-color)
+  border-radius: var(--borderRadius-medium)
 
 @mixin main-menu-selected
   background: var(--main-menu-bg-selected-background)
   color: var(--main-menu-selected-font-color)
   border: 1px solid var(--main-menu-bg-selected-border)
+  border-radius: var(--borderRadius-medium)
+
+@mixin main-item-wrapper-border
+  border-bottom-right-radius: 0
+  border-top-right-radius: 0
+
+@mixin main-item-wrapper-toggler-border
+  border-bottom-left-radius: 0
+  border-top-left-radius: 0
 
 .main-menu
   width: var(--main-menu-width)
@@ -54,6 +64,7 @@ $arrow-left-width: 40px
     +allow-vertical-scrolling
     height: calc(100vh - var(--header-height))
     position: relative
+    padding: 0 var(--base-size-8)
     @include styled-scroll-bar
 
     // Fixed heights to allow inner scrolling
@@ -119,7 +130,7 @@ $arrow-left-width: 40px
     font-weight: normal
     font-size: var(--main-menu-font-size)
     font-style: normal
-    padding: 0 var(--main-menu-x-spacing)
+    padding: 0 var(--base-size-8)
 
     &:hover
       text-decoration: none
@@ -165,6 +176,14 @@ $arrow-left-width: 40px
     flex: 0 0 calc(100% - 40px)
     max-width: calc(100% - 40px)
 
+.main-item-wrapper
+  a:not(.Button)
+
+    &:hover, &:focus, &:active
+      @include main-item-wrapper-border
+
+      & ~ .toggler
+        @include main-item-wrapper-toggler-border
 // -------------------- CHILD menu items ---------------------------
 .main-menu--children
   display: none
