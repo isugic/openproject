@@ -74,7 +74,7 @@ export class BannersService {
   public async conditional(feature:string, featureAvailable?:() => void, featureNotAvailable?:() => void) {
     await this.configuration.initialize();
 
-    if (this.allowsTo(feature)) {
+    if (!this.allowsTo(feature)) {
       this.callMaybe(featureAvailable);
     } else {
       this.callMaybe(featureNotAvailable);
