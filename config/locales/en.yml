@@ -888,6 +888,7 @@ en:
 
       label_parent_singular: "parent"
       label_parent_plural: "parent"
+      label_other_relations: "Other relations"
       ghost_relation_title: "Related work package"
       ghost_relation_description: "This is not visible to you due to permissions."
 

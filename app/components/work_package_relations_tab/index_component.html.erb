@@ -22,7 +22,15 @@
               t(:label_relation)
             end
 
-            render_add_relations_menu_items(menu, ADD_RELATION_MENU_TYPES)
+            render_add_relations_menu_items(menu, FIRST_LEVEL_RELATION_MENU_TYPES)
+            menu.with_sub_menu_item(
+              label: t("#{I18N_NAMESPACE}.relations.label_other_relations"),
+              menu_id: ADD_RELATION_SUB_MENU,
+              anchor_side: :outside_left,
+              anchor_align: :end
+            ) do |sub_menu|
+              render_add_relations_menu_items(sub_menu, SECOND_LEVEL_RELATION_MENU_TYPES)
+            end
           end
         end
       end
