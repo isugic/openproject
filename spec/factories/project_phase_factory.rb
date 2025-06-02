@@ -36,12 +36,8 @@ FactoryBot.define do
 
     start_date { Date.current - 2.days }
     finish_date { Date.current + 2.days }
-    duration do
-      next nil unless date_range_set?
-
-      working_days = Setting.find_by(name: :working_days).value.map(&:to_i)
-      (start_date..finish_date).count { |d| working_days.include?(d.cwday) }
-    end
+    # use :calculate_duration trait if duration needs to take weekends and non working days into account
+    duration { date_range_set? ? finish_date - start_date + 1 : nil }
 
     trait :skip_validate do
       to_create { |instance| instance.save(validate: false) }
@@ -60,7 +56,7 @@ FactoryBot.define do
     end
 
     # calculate duration taking weekdays and non working days into account
-    trait :proper_duration do
+    trait :calculate_duration do
       duration { calculate_duration }
     end
   end

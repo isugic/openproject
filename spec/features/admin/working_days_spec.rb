@@ -46,6 +46,7 @@ RSpec.describe "Working Days", :js do
   # Create consecutive phases with fixed dates
   shared_let(:phase1) do
     create(:project_phase,
+           :calculate_duration,
            project:,
            definition: phase_definition1,
            start_date: phase1_start_date,
@@ -54,6 +55,7 @@ RSpec.describe "Working Days", :js do
 
   shared_let(:phase2) do
     create(:project_phase,
+           :calculate_duration,
            project:,
            definition: phase_definition2,
            start_date: phase2_start_date,
