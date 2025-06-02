@@ -50,19 +50,23 @@ RSpec.describe Settings::WorkingDaysAndHoursParamsContract do
     end
   end
 
-  context "with an ApplyWorkingDaysChangeJob already existing",
-          with_good_job: WorkPackages::ApplyWorkingDaysChangeJob do
-    let(:params) { { working_days: [1, 2, 3], hours_per_day: 8 } }
+  [
+    Projects::Phases::ApplyWorkingDaysChangeJob,
+    WorkPackages::ApplyWorkingDaysChangeJob
+  ].each do |job_class|
+    context "with an #{job_class} already existing", with_good_job: job_class do
+      let(:params) { { working_days: [1, 2, 3], hours_per_day: 8 } }
 
-    before do
-      WorkPackages::ApplyWorkingDaysChangeJob
-        .set(wait: 10.minutes) # GoodJob executes inline job without wait immediately
-        .perform_later(user_id: current_user.id,
-                       previous_non_working_days: [],
-                       previous_working_days: [1, 2, 3, 4])
+      before do
+        job_class
+          .set(wait: 10.minutes) # GoodJob executes inline job without wait immediately
+          .perform_later(user_id: current_user.id,
+                         previous_non_working_days: [],
+                         previous_working_days: [1, 2, 3, 4])
+      end
+
+      include_examples "contract is invalid", base: :previous_working_day_changes_unprocessed
     end
-
-    include_examples "contract is invalid", base: :previous_working_day_changes_unprocessed
   end
 
   describe "0 durations" do
