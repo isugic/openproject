@@ -211,11 +211,8 @@ RSpec.describe "layouts/base" do
       end
     end
 
-    context "EE is active and styles are not present" do
+    context "when an Enterprise token is active and styles are not present", with_ee: %i[define_custom_style] do
       before do
-        allow(EnterpriseToken).to receive(:current).and_return(a_token)
-        allow(a_token).to receive(:expired?).and_return(false)
-        allow(a_token).to receive(:allows_to?).with(:define_custom_style).and_return(true)
         allow(CustomStyle).to receive(:current).and_return(nil)
 
         render
@@ -226,12 +223,8 @@ RSpec.describe "layouts/base" do
       end
     end
 
-    context "EE does not allow custom styles" do
+    context "when an Enterprise token is active but does not allow custom styles", with_ee: %i[] do
       before do
-        allow(EnterpriseToken).to receive(:current).and_return(a_token)
-        allow(a_token).to receive(:expired?).and_return(false)
-        allow(a_token).to receive(:allows_to?).with(:define_custom_style).and_return(false)
-
         render
       end
 
@@ -240,10 +233,8 @@ RSpec.describe "layouts/base" do
       end
     end
 
-    context "no EE present" do
+    context "when there are no Enterprise tokens" do
       before do
-        allow(EnterpriseToken).to receive(:current).and_return(nil)
-
         render
       end
 

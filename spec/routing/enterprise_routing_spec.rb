@@ -30,7 +30,7 @@
 
 require "spec_helper"
 
-RSpec.describe EnterprisesController do
+RSpec.describe EnterpriseTokensController do
   context "when `ee_manager_visible`" do
     it "connects GET /admin/enterprise to enterprises#show" do
       allow(OpenProject::Configuration).to receive(:ee_manager_visible?).and_return(true)

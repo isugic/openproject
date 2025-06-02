@@ -65,6 +65,7 @@ RSpec.configure do |config|
         .to receive_messages(token_object: token_object_double,
                              available_features: allowed.to_a,
                              expired?: false,
+                             trial?: false,
                              restrictions: {})
     end
   end
