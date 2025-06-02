@@ -50,7 +50,7 @@ RSpec.describe CustomStylesController do
 
       context "when no active token exists" do
         before do
-          allow(EnterpriseToken).to receive(:current).and_return(nil)
+          allow(EnterpriseToken).to receive(:active_tokens).and_return([])
         end
 
         it "redirects to #upsell" do

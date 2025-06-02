@@ -50,7 +50,7 @@ RSpec.configure do |config|
     if allowed.present?
       allowed = aggregate_parent_array(example, allowed.to_set)
 
-      token_double = instance_double(EnterpriseToken)
+      enterprise_token_double = instance_double(EnterpriseToken)
       token_object_double = instance_double(OpenProject::Token)
       allow(EnterpriseToken).to receive(:allows_to?).and_call_original
       allow(token_object_double).to receive(:has_feature?).and_return(false)
@@ -60,8 +60,8 @@ RSpec.configure do |config|
       end
 
       # Also signal available features
-      allow(EnterpriseToken).to receive(:current).and_return(token_double)
-      allow(token_double)
+      allow(EnterpriseToken).to receive(:active_tokens).and_return([enterprise_token_double])
+      allow(enterprise_token_double)
         .to receive_messages(token_object: token_object_double,
                              available_features: allowed.to_a,
                              expired?: false,
