@@ -496,6 +496,8 @@ paths:
     "$ref": "./paths/work_package_relations.yml"
   "/api/v3/work_packages/{id}/reminders":
     "$ref": "./paths/work_package_reminders.yml"
+  "/api/v3/work_packages/{work_package_id}/reminders/{reminder_id}":
+    "$ref": "./paths/work_package_reminder.yml"
   "/api/v3/work_packages/{id}/watchers":
     "$ref": "./paths/work_package_watchers.yml"
   "/api/v3/work_packages/{id}/watchers/{user_id}":
