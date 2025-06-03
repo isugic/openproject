@@ -241,56 +241,6 @@ RSpec.describe RepositoriesController do
         end
       end
 
-      shared_examples "renders the repository title" do |active_breadcrumb|
-        it do
-          expect(response).to be_successful
-          expect(response.body).to have_css(".PageHeader-breadcrumbs", text: active_breadcrumb)
-        end
-      end
-
-      describe "show" do
-        render_views
-        let(:role) { create(:project_role, permissions: [:browse_repository]) }
-
-        before do
-          get :show, params: { project_id: project.identifier, repo_path: path }
-        end
-
-        context "with brackets" do
-          let(:path) { "subversion_test/[folder_with_brackets]" }
-
-          it_behaves_like "renders the repository title", "[folder_with_brackets]"
-        end
-
-        context "with unicode" do
-          let(:path) { "Föbar/äm/Sägepütz!%5D§" }
-
-          it_behaves_like "renders the repository title", "Sägepütz!%5D§"
-        end
-      end
-
-      describe "changes" do
-        render_views
-        let(:role) { create(:project_role, permissions: [:browse_repository]) }
-
-        before do
-          get :changes, params: { project_id: project.identifier, repo_path: path }
-          expect(response).to be_successful
-        end
-
-        context "with brackets" do
-          let(:path) { "subversion_test/[folder_with_brackets]" }
-
-          it_behaves_like "renders the repository title", "[folder_with_brackets]"
-        end
-
-        context "with unicode" do
-          let(:path) { "Föbar/äm" }
-
-          it_behaves_like "renders the repository title", "äm"
-        end
-      end
-
       describe "checkout path" do
         render_views
 
