@@ -62,21 +62,6 @@ See COPYRIGHT and LICENSE files for more details.
         title: t(:label_setting_plural)
       )
     end
-    if @instructions && @instructions.available?
-      header.with_action_icon_button(
-        tag: :a,
-        icon: :info,
-        label: t("repositories.checkout.show_instructions"),
-        mobile_icon: :info,
-        mobile_label: t("repositories.checkout.show_instructions"),
-        size: :medium,
-        id: "repository--checkout-instructions-toggle",
-        class: "persistent-toggle--click-handler",
-        href: "",
-        aria: { label: t(:label_setting_plural) },
-        title: tt("repositories.checkout.show_instructions")
-      )
-    end
   end
 %>
 <%= call_hook(

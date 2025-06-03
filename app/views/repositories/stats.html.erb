@@ -30,17 +30,8 @@ See COPYRIGHT and LICENSE files for more details.
 <%=
   render Primer::OpenProject::PageHeader.new do |header|
     header.with_title { t(:label_statistics) }
-    header.with_breadcrumbs([{
-                               href: project_overview_path(@project.id),
-                               text: @project.name
-                             },
-                             {
-                               href: url_for({ action: "show", project_id: @project, repo_path: nil, rev: @rev }),
-                               text: t(
-                                 "repositories.named_repository",
-                                 vendor_name: @repository.class.vendor_name
-                               )
-                             },
+    header.with_breadcrumbs([{ href: project_overview_path(@project.id), text: @project.name },
+                             { href: url_for({ action: "show", project_id: @project, repo_path: nil, rev: @rev }), text: t(:label_repository) },
                              t(:label_statistics)
                             ])
   end
